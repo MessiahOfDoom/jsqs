@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bk6qu6tmag6te"
+path="res://.godot/imported/tensorproduct.glsl-dd12811a896c74d5493a03411d8e393e.res"
+
+[deps]
+
+source_file="res://Scripts/Shaders/tensorproduct.glsl"
+dest_files=["res://.godot/imported/tensorproduct.glsl-dd12811a896c74d5493a03411d8e393e.res"]
+
+[params]
+
