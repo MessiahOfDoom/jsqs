@@ -6,7 +6,7 @@ using System.Data.Common;
 public struct LazyMatrix: IMatrix {
 
 	public static bool EnableCaching = true;
-	public static int CachingMinSize = 16, CachingMaxSize = 4096;
+	public static int CachingMinSize = 16;
 
 	private IMatrix left, rightM;
 	private Complex rightC;
@@ -38,7 +38,7 @@ public struct LazyMatrix: IMatrix {
 
 	public Complex this[int y, int x] {
 		get {
-			if(EnableCaching && getN() >= CachingMinSize && getN() <= CachingMaxSize && op != LazyMatrixOperation.Hold) {
+			if(EnableCaching && getN() >= CachingMinSize && op != LazyMatrixOperation.Hold) {
 				calls++;
 				long idx = ((long)y) << 32 | (long)x; 
 				if(!cache.ContainsKey(idx)) {
@@ -58,10 +58,25 @@ public struct LazyMatrix: IMatrix {
 						}
 						case LazyMatrixOperation.MultMatrix: {
 							Complex value = 0;
-							for(int i = 0; i < left.getN(); i++){
-								value += left[y, i]  * rightM[i, x];
+							if(left.isSparse()) {
+								var l = left.RowKeys(y);
+								foreach(int i in l) {
+									value += left[y, i] * rightM[i, x];
+								}
+							}
+							else if(rightM.isSparse()) {
+								var l = rightM.ColKeys(x);
+								foreach(int i in l) {
+									value += left[y, i] * rightM[i, x];
+								}
+							}
+							else {
+								for(int i = 0; i < left.getN(); i++){
+									value += left[y, i]  * rightM[i, x];
+								}
 							}
 							cache[idx] = value;
+							
 							break;
 						}
 						case LazyMatrixOperation.Tensor: {
@@ -100,6 +115,17 @@ public struct LazyMatrix: IMatrix {
 					throw new ArgumentOutOfRangeException();
 				}
 			}
+		}
+	}
+
+	public bool isSparse(){
+		switch(op) {
+			case LazyMatrixOperation.Hold:
+			case LazyMatrixOperation.MultComplex:
+			case LazyMatrixOperation.Transpose:
+				return left.isSparse();
+			default:
+				return false;
 		}
 	}
 
@@ -190,7 +216,7 @@ public struct LazyMatrix: IMatrix {
 			throw new ArgumentException("Vector is transposed, unable to multiply");
 		}
 
-		Vector _out = new Vector(m1.getM());
+		Vector _out = new(m1.getM());
 		for(int i = 0; i < m1.getM(); i++) {
 			Complex val = 0;
 			for(int j = 0; j < m1.getN(); j++) {
@@ -206,11 +232,21 @@ public struct LazyMatrix: IMatrix {
 		return new LazyMatrix(m1, LazyMatrixOperation.Hold);
 	}
 	
-	public void evalCache() {
+	public void EvalCache() {
 		GD.Print($"{getM()} * {getN()}: {calcs}/{calls} => {((double)calcs)/calls}");
-		if(left is LazyMatrix) ((LazyMatrix)left).evalCache();
-		if(rightM != null && rightM != left) ((LazyMatrix)rightM).evalCache();
+		if(left is LazyMatrix matrix) matrix.EvalCache();
+		if(rightM != null && rightM != left) ((LazyMatrix)rightM).EvalCache();
 	}
+
+    public List<int> RowKeys(int row)
+    {
+        return op == LazyMatrixOperation.Transpose ? left.ColKeys(row) : left.RowKeys(row);
+    }
+
+    public List<int> ColKeys(int col)
+    {
+        return op == LazyMatrixOperation.Transpose ? left.RowKeys(col) : left.ColKeys(col);
+    }
 }
 
 public enum LazyMatrixOperation {

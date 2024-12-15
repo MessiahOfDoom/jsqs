@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Globalization;
 using System.IO;
 
 public record Helpers {
@@ -36,6 +37,14 @@ public record Helpers {
 		byte[] _out = new byte[b1.Length + b2.Length];
 		Buffer.BlockCopy(b1, 0, _out, 0, b1.Length);
 		Buffer.BlockCopy(b2, 0, _out, b1.Length, b2.Length);
+		return _out;
+	}
+
+	public static T[] ArrayWithValue<T>(int size, Func<T> factory) {
+		T[] _out = new T[size];
+		for(int i = 0; i < size; ++i) {
+			_out[i] = factory();
+		}
 		return _out;
 	}
 

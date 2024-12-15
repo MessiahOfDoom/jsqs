@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.IO;
 
 public struct StructMatrix: IMatrix {
@@ -150,6 +151,20 @@ public struct StructMatrix: IMatrix {
     public int getM()
     {
         return m;
+    }
+
+	public bool isSparse() {
+		return false;
+	}
+
+    public List<int> RowKeys(int row)
+    {
+        throw new NotImplementedException("Struct Matrices are not sparse");
+    }
+
+    public List<int> ColKeys(int col)
+    {
+        throw new NotImplementedException("Struct Matrices are not sparse");
     }
 
     public static bool operator ==(StructMatrix left, StructMatrix right) {
