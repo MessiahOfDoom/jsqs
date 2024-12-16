@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://chg6g2ofbxogm"]
+
+[node name="ComplexInputSlot" type="Control"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 188.0
+offset_bottom = 31.0
+
+[node name="LineEdit" type="LineEdit" parent="."]
+layout_mode = 2
+offset_right = 67.0625
+offset_bottom = 31.0
+placeholder_text = "real"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+offset_left = 67.0
+offset_top = 4.0
+offset_right = 91.0
+offset_bottom = 27.0
+text = "+"
+horizontal_alignment = 1
+
+[node name="LineEdit2" type="LineEdit" parent="."]
+layout_mode = 2
+offset_left = 91.0
+offset_right = 158.062
+offset_bottom = 31.0
+placeholder_text = "imag"
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 2
+offset_left = 162.0
+offset_top = 4.0
+offset_right = 188.0
+offset_bottom = 27.0
+text = "i"

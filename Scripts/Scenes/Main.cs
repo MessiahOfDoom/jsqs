@@ -8,10 +8,10 @@ public partial class Main : GraphEdit
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		var v = new Vector(256*4*4*4);
+		var v = new Vector(256);
 		v[0] = 1;
 		var stopwatch = Stopwatch.StartNew();
-		var m = GateBuilder.Identity(14) * GateBuilder.Hadamard(14) * GateBuilder.Identity(14);
+		var m = GateBuilder.Identity(8) * GateBuilder.Hadamard(8) * GateBuilder.Identity(8);
 		stopwatch.Stop();
 		GD.Print(stopwatch.Elapsed);
 		GD.Print(m.getN());
