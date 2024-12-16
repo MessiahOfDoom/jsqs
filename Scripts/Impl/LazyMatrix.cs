@@ -216,14 +216,28 @@ public struct LazyMatrix: IMatrix {
 			throw new ArgumentException("Vector is transposed, unable to multiply");
 		}
 
+
 		Vector _out = new(m1.getM());
-		for(int i = 0; i < m1.getM(); i++) {
-			Complex val = 0;
-			for(int j = 0; j < m1.getN(); j++) {
-				if(v1[j].Abs2() == 0) continue;
-				val += m1[i,j] * v1[j];
+
+		if(m1.isSparse()) {
+			for(int i = 0; i < m1.getM(); i++) {
+				var l = m1.RowKeys(i);
+				Complex val = 0;
+				foreach(int j in l) {
+					if(v1[j].Abs2() == 0) continue;
+					val += m1[i,j] * v1[j];
+				}
+				_out[i] = val;
 			}
-			_out[i] = val;
+		}else {
+			for(int i = 0; i < m1.getM(); i++) {
+				Complex val = 0;
+				for(int j = 0; j < m1.getN(); j++) {
+					if(v1[j].Abs2() == 0) continue;
+					val += m1[i,j] * v1[j];
+				}
+				_out[i] = val;
+			}
 		}
 		return _out;
 	}
