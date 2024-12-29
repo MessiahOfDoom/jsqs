@@ -1,54 +1,34 @@
-[gd_scene load_steps=4 format=3 uid="uid://tki3c4yssxg7"]
+[gd_scene load_steps=5 format=3 uid="uid://tki3c4yssxg7"]
 
-[ext_resource type="Script" path="res://Scripts/Scenes/Main.cs" id="1_ohimh"]
-[ext_resource type="Script" path="res://Scripts/Scenes/Nodes/HadamardGate.cs" id="2_mwewv"]
+[ext_resource type="PackedScene" uid="uid://jkujowb0yw5p" path="res://Scenes/SideBar.tscn" id="1_7w12w"]
+[ext_resource type="Script" path="res://Scripts/Scenes/QuantumGraph.cs" id="1_ohimh"]
 [ext_resource type="PackedScene" uid="uid://bjf7efc0k0dwc" path="res://Scenes/InputGate.tscn" id="3_e4h7l"]
 
-[node name="GraphEdit" type="GraphEdit"]
-offset_right = 1280.0
-offset_bottom = 720.0
-scroll_offset = Vector2(-513, -333)
+[sub_resource type="Theme" id="Theme_wg4k2"]
+BoxContainer/constants/separation = 1
+
+[node name="HBoxContainer" type="HBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+theme = SubResource("Theme_wg4k2")
+
+[node name="SideBar" parent="." instance=ExtResource("1_7w12w")]
+layout_mode = 2
+
+[node name="GraphEdit" type="GraphEdit" parent="." node_paths=PackedStringArray("inputGate")]
+custom_minimum_size = Vector2(1024, 720)
+layout_mode = 2
 script = ExtResource("1_ohimh")
+inputGate = NodePath("InputGate")
 
-[node name="HadamardGate" type="GraphNode" parent="."]
+[node name="InputGate" parent="GraphEdit" instance=ExtResource("3_e4h7l")]
 layout_mode = 0
-offset_left = 424.0
-offset_top = 278.0
-offset_right = 555.0
-offset_bottom = 405.0
+offset_left = 137.0
+offset_top = 314.0
+offset_right = 363.0
+offset_bottom = 404.0
 mouse_filter = 1
-position_offset = Vector2(-89, -55)
-title = "Hadamard Gate"
-slot/0/left_enabled = true
-slot/0/left_type = 0
-slot/0/left_color = Color(1, 1, 1, 1)
-slot/0/left_icon = null
-slot/0/right_enabled = true
-slot/0/right_type = 0
-slot/0/right_color = Color(1, 1, 1, 1)
-slot/0/right_icon = null
-slot/0/draw_stylebox = true
-slot/1/left_enabled = true
-slot/1/left_type = 0
-slot/1/left_color = Color(1, 1, 1, 1)
-slot/1/left_icon = null
-slot/1/right_enabled = true
-slot/1/right_type = 0
-slot/1/right_color = Color(1, 1, 1, 1)
-slot/1/right_icon = null
-slot/1/draw_stylebox = true
-script = ExtResource("2_mwewv")
-QBits = 2
-
-[node name="InputGate" parent="." instance=ExtResource("3_e4h7l")]
-layout_mode = 0
-offset_left = 108.0
-offset_top = 279.0
-offset_right = 321.0
-offset_bottom = 406.0
-mouse_filter = 1
-position_offset = Vector2(-405, -54)
-title = "Input Gate"
+position_offset = Vector2(137, 314)
 slot/0/left_enabled = false
 slot/0/left_type = 0
 slot/0/left_color = Color(0, 0, 0, 0)
@@ -58,48 +38,11 @@ slot/0/right_type = 0
 slot/0/right_color = Color(1, 1, 1, 1)
 slot/0/right_icon = null
 slot/0/draw_stylebox = true
-slot/1/left_enabled = false
-slot/1/left_type = 0
-slot/1/left_color = Color(0, 0, 0, 0)
-slot/1/left_icon = null
-slot/1/right_enabled = true
-slot/1/right_type = 0
-slot/1/right_color = Color(1, 1, 1, 1)
-slot/1/right_icon = null
-slot/1/draw_stylebox = true
-QBits = 2
+QBits = 1
 
-[node name="HadamardGate2" type="GraphNode" parent="."]
-layout_mode = 0
-offset_left = 595.0
-offset_top = 279.0
-offset_right = 726.0
-offset_bottom = 406.0
-mouse_filter = 1
-position_offset = Vector2(82, -54)
-title = "Hadamard Gate"
-slot/0/left_enabled = true
-slot/0/left_type = 0
-slot/0/left_color = Color(1, 1, 1, 1)
-slot/0/left_icon = null
-slot/0/right_enabled = true
-slot/0/right_type = 0
-slot/0/right_color = Color(1, 1, 1, 1)
-slot/0/right_icon = null
-slot/0/draw_stylebox = true
-slot/1/left_enabled = true
-slot/1/left_type = 0
-slot/1/left_color = Color(1, 1, 1, 1)
-slot/1/left_icon = null
-slot/1/right_enabled = true
-slot/1/right_type = 0
-slot/1/right_color = Color(1, 1, 1, 1)
-slot/1/right_icon = null
-slot/1/draw_stylebox = true
-script = ExtResource("2_mwewv")
-QBits = 2
-
-[connection signal="connection_from_empty" from="." to="." method="OnConnectionToFromEmpty" binds= [false]]
-[connection signal="connection_request" from="." to="." method="OnConnectionRequest"]
-[connection signal="connection_to_empty" from="." to="." method="OnConnectionToFromEmpty" binds= [true]]
-[connection signal="disconnection_request" from="." to="." method="OnDisconnectionRequest"]
+[connection signal="AddNode" from="SideBar" to="GraphEdit" method="AddGraphNodeFromScene"]
+[connection signal="SetQBitCount" from="SideBar" to="GraphEdit/InputGate" method="OnSetSlotCount"]
+[connection signal="connection_from_empty" from="GraphEdit" to="GraphEdit" method="OnConnectionToFromEmpty" binds= [false]]
+[connection signal="connection_request" from="GraphEdit" to="GraphEdit" method="OnConnectionRequest"]
+[connection signal="connection_to_empty" from="GraphEdit" to="GraphEdit" method="OnConnectionToFromEmpty" binds= [true]]
+[connection signal="disconnection_request" from="GraphEdit" to="GraphEdit" method="OnDisconnectionRequest"]

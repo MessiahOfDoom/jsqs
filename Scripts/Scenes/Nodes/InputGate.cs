@@ -35,6 +35,11 @@ public partial class InputGate : GraphNode
 			AddChild(slot);
 			SetSlot(i, false, 0, new(), true, 0, new(1,1,1,1));
 		}
+		this.Size = new Vector2(0, 0); //Autosize
+	}
+
+	public void OnSetSlotCount(int count) {
+		QBits = count;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

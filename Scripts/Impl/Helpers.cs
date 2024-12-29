@@ -48,4 +48,16 @@ public record Helpers {
 		return _out;
 	}
 
+	public static void AddCloseButton(GraphNode node, QuantumGraph parent) {
+		var CloseButtonScene = GD.Load<PackedScene>(ProjectSettings.GlobalizePath("res://Scenes/CloseButton.tscn"));
+		Node closeButton = CloseButtonScene.Instantiate();
+		if(closeButton is Button) {
+			closeButton.Connect("pressed", Callable.From(() => {
+				parent.RemoveNode(node);
+				node.QueueFree();
+			}));
+		}
+		node.GetTitlebarHBox().AddChild(closeButton);
+	}
+
 }
