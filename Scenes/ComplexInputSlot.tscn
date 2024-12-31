@@ -1,13 +1,18 @@
-[gd_scene format=3 uid="uid://chg6g2ofbxogm"]
+[gd_scene load_steps=2 format=3 uid="uid://chg6g2ofbxogm"]
 
-[node name="ComplexInputSlot" type="Control"]
+[ext_resource type="Script" path="res://Scripts/Scenes/ComplexInputSlot.cs" id="1_t0dg4"]
+
+[node name="ComplexInputSlot" type="Control" node_paths=PackedStringArray("RealEdit", "ComplexEdit")]
 custom_minimum_size = Vector2(190, 35)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 190.0
 offset_bottom = 35.0
+script = ExtResource("1_t0dg4")
+RealEdit = NodePath("RealEdit")
+ComplexEdit = NodePath("ComplexEdit")
 
-[node name="LineEdit" type="LineEdit" parent="."]
+[node name="RealEdit" type="LineEdit" parent="."]
 layout_mode = 2
 offset_right = 67.0625
 offset_bottom = 31.0
@@ -22,7 +27,7 @@ offset_bottom = 27.0
 text = "+"
 horizontal_alignment = 1
 
-[node name="LineEdit2" type="LineEdit" parent="."]
+[node name="ComplexEdit" type="LineEdit" parent="."]
 layout_mode = 2
 offset_left = 91.0
 offset_right = 158.062

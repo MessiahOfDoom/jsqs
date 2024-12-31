@@ -80,7 +80,6 @@ public struct StructMatrix: IMatrix {
 	// (Mis)use of the XOR operator to signify Tensorproduct
 	public static StructMatrix operator ^(StructMatrix m1, StructMatrix m2) {
 		StructMatrix _out = new StructMatrix(m1.m * m2.m, m1.n * m2.n);
-		GD.Print(m1.m);
 		for(int i = 0; i < m1.m; i++) {
 			for(int j = 0; j < m1.n; j++) {
 				for(int k = 0; k < m2.m; k++) {
@@ -177,5 +176,13 @@ public struct StructMatrix: IMatrix {
 
 	public static bool operator !=(StructMatrix left, StructMatrix right) {
 		return !(left == right);
+	}
+
+	public override bool Equals(object obj) {
+		return (obj is StructMatrix matrix) && this == matrix;
+	}
+
+	public override int GetHashCode() {
+		return base.GetHashCode();
 	}
 }

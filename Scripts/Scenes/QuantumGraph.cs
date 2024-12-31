@@ -16,13 +16,27 @@ public partial class QuantumGraph : GraphEdit
 
 	[Export]
 	private InputGate inputGate;
+
+	[Export]
+	private OutputGate outputGate;
+
+	private int latestSlotCount = 1;
+
 	public override void _Ready()
 	{
-
+		inputGate ??= FindChild("InputGate", recursive:true, owned:false) as InputGate;
 		if(inputGate != null) {
 			nodes.Add(inputGate);
 			tree.Add(inputGate.Name, new());
 		}	
+
+		outputGate ??= FindChild("OutputGate", recursive:true, owned:false) as OutputGate;
+		if(outputGate != null) {
+			nodes.Add(outputGate);
+			tree.Add(outputGate.Name, new());
+		}	
+
+
 /*
 		var testCount = 10	;
 		var testLen = 1 << testCount;
@@ -53,22 +67,19 @@ public partial class QuantumGraph : GraphEdit
 
 	public void OnConnectionRequest(string fromNode, int fromPort, string toNode, int toPort) {
 		var conn = GetConnection(fromNode, fromPort, true);
-		if(conn != null) DisconnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"]);
+		if(conn != null) DisconnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"], false);
 		conn = GetConnection(toNode, toPort, false);
 		if(conn != null) DisconnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"]);
-		RebuildTree();
 		if(!WouldContainLoop(fromNode, fromPort, toNode, toPort)) ConnectNodeInternal(fromNode, fromPort, toNode, toPort);
 	}
 
 	public void OnDisconnectionRequest(string fromNode, int fromPort, string toNode, int toPort) {
 		DisconnectNodeInternal(fromNode, fromPort, toNode, toPort);
-		RebuildTree();
 	}
 
 	public void OnConnectionToFromEmpty(string node, int port, Vector2 pos, bool from) {
 		var conn = GetConnection(node, port, from);
 		if(conn != null) DisconnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"]);
-		RebuildTree();
 	}
 
 	private Dictionary GetConnection(string node, int port, bool from) {
@@ -90,8 +101,11 @@ public partial class QuantumGraph : GraphEdit
 		return null;
 	}
 
-	public void DisconnectNodeInternal(StringName fromNode, int fromPort, StringName toNode, int toPort) {
+	public void DisconnectNodeInternal(StringName fromNode, int fromPort, StringName toNode, int toPort, bool rebuildTree = true) {
 		DisconnectNode(fromNode, fromPort, toNode, toPort);
+		if(rebuildTree) {
+			RebuildTree();
+		}
 	}
 
 	public void ConnectNodeInternal(StringName fromNode, int fromPort, StringName toNode, int toPort) {
@@ -114,8 +128,14 @@ public partial class QuantumGraph : GraphEdit
 
 	public void RemoveNode(GraphNode node) {
 		nodes.Remove(node);
-		tree.Remove(node.Name);
+		var connections = GetConnectionList();
+		foreach (var conn in connections) {
+			if((StringName)conn["from_node"] == node.Name || (StringName)conn["to_node"] == node.Name) {
+				DisconnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"], false);
+			}
+		}
 		RemoveChild(node);
+		RebuildTree();
 	}
 
 	public void RemoveNodeByName(StringName name) {
@@ -129,6 +149,7 @@ public partial class QuantumGraph : GraphEdit
 		node.Name = Guid.NewGuid().ToString();
 		GraphNode newNode = node as GraphNode;
 		Helpers.AddCloseButton(newNode, this);
+		if(newNode is IResizeableGate res) res.SetSlotCount(latestSlotCount);
 		AddGraphNode(node as GraphNode);
 	} 
 
@@ -154,7 +175,7 @@ public partial class QuantumGraph : GraphEdit
 		tree[currentNode].UnionWith(set);
 	}
 
-	private void PrintTree() {
+	private void PrintNodeTree() {
 		GD.Print("\n\n\n");
 		foreach(GraphNode node in nodes) {
 			GD.Print(node.Name);
@@ -163,6 +184,110 @@ public partial class QuantumGraph : GraphEdit
 			}
 			GD.Print("__________________________");
 		}
+	}
+
+	public void SaveToJson(string filename) {
+		using var Savefile = FileAccess.Open(filename, FileAccess.ModeFlags.Write);
+		Savefile.StoreString(AsJsonString());
+	}
+
+	public string AsJsonString() {
+		Godot.Collections.Dictionary<string, Variant> graph = new();
+		Array<Variant> gates = new();
+		foreach(GraphNode node in nodes) {
+			if(node is ISaveableGate gate) {
+				gates.Add(gate.Save());
+			}
+		}
+		graph.Add("gates", gates);
+		graph.Add("connections", GetConnectionList());
+		return Json.Stringify(graph, indent: "\t");
+	}
+
+	public void LoadFromJson(string filename) {
+		
+		using var Savefile = FileAccess.Open(filename, FileAccess.ModeFlags.Read);
+		string text = Savefile.GetAsText();
+		LoadFromJsonString(text);
+	}
+
+	private void ClearGraph() {
+		ClearConnections();
+		var nodesClone = new List<GraphNode>(nodes);
+		foreach(var node in nodesClone) {
+			if(node == inputGate || node == outputGate)continue;
+			RemoveNode(node);
+		}
+	}
+
+	public void LoadFromJsonString(string text) {
+		ClearGraph();
+		var json = new Json();
+		var parseRes = json.Parse(text);
+		if(parseRes != Error.Ok) {
+			GD.Print($"JSON Parse Error: {json.GetErrorMessage()} in '{text}' at line {json.GetErrorLine()}");
+		}
+		var data = new Godot.Collections.Dictionary<string, Variant>((Dictionary)json.Data);
+		Array<Variant> gates = (Array<Variant>)data["gates"]; 
+		foreach(Variant v in gates) {
+			Godot.Collections.Dictionary<string, Variant> nodeData = (Godot.Collections.Dictionary<string, Variant>)v;
+			GraphNode node;
+			if(nodeData["Name"].AsString().Equals("InputGate", StringComparison.InvariantCultureIgnoreCase)) {
+				node = inputGate;
+			}else if(nodeData["Name"].AsString().Equals("OutputGate", StringComparison.InvariantCultureIgnoreCase)) {
+				node = outputGate;
+			}else {
+				var scene = GD.Load<PackedScene>(nodeData["Filename"].AsString());
+				node = scene.Instantiate<GraphNode>();
+				node.Name = nodeData["Name"].AsString();
+				Helpers.AddCloseButton(node, this);
+				AddGraphNode(node);
+			}
+			
+			node.PositionOffset = new Vector2((float)nodeData["PosX"], (float)nodeData["PosY"]);
+			if(node is ISaveableGate gate) gate.Load(nodeData);
+		}
+
+		Array<Dictionary> connections = (Array<Dictionary>)data["connections"];
+		foreach(var conn in connections) {
+			ConnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"]);
+		}
+		inputGate.EmitSignal(InputGate.SignalName.SetQbitsFromInputGate, latestSlotCount);
+	}
+
+	public void OnSetSlotCount(int slotCount){
+		var connections = GetConnectionList();
+		foreach(var conn in connections) {
+			if((int)conn["from_port"] >= slotCount) {
+				var NodeFrom = NodeByName((StringName)conn["from_node"]);
+				if (NodeFrom != null && NodeFrom is IResizeableGate) {
+					DisconnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"], false);
+					continue;
+				}
+			}
+			if((int)conn["to_port"] >= slotCount) {
+				var NodeTo = NodeByName((StringName)conn["to_node"]);
+				if (NodeTo != null && NodeTo is IResizeableGate) {
+					DisconnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"], false);
+					continue;
+				}
+			}
+		}
+		latestSlotCount = slotCount;
+		foreach(var node in nodes) {
+			if (node is IResizeableGate gate) {
+				gate.SetSlotCount(slotCount);
+			}
+		}
+		RebuildTree();
+	}
+
+	private GraphNode NodeByName(StringName name) {
+		return nodes.Find(x => ((string)x.Name).Equals((string)name, StringComparison.InvariantCultureIgnoreCase));
+	}
+
+	public QCircuit compile() {
+		return Compiler.compile(latestSlotCount, inputGate, NodeByName, (name, port) => GetConnection(name, port, true));
 	}
 
 }

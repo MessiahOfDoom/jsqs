@@ -2,8 +2,8 @@ using Godot;
 using Godot.Collections;
 using System;
 
-[GlobalClass, Tool]
-public partial class HadamardGate : GraphNode, ISaveableGate
+[Tool]
+public partial class OutputGate : GraphNode, ISaveableGate, IResizeableGate, ICheckpointGate
 {
 
 	private int _qbits = 1;
@@ -15,11 +15,10 @@ public partial class HadamardGate : GraphNode, ISaveableGate
 			SetSlots();
 		} 
 	}
-
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Hadamard Gate";
+		Title = "Output";
 		SetSlots();
 	}
 
@@ -28,7 +27,7 @@ public partial class HadamardGate : GraphNode, ISaveableGate
 			RemoveChild(c);
 		}
 		for(int i = 0; i < QBits; ++i) {
-			var helper = new SlotHelper(true, true, 0, 0);
+			var helper = new SlotHelper(true, false, 0, 0);
 			helper.CustomMinimumSize = new Vector2(0, 35);
 			AddChild(helper);
 		}
@@ -49,4 +48,15 @@ public partial class HadamardGate : GraphNode, ISaveableGate
     {
         //Nothing to do here
     }
+
+    public void SetSlotCount(int slotCount)
+    {
+        QBits = slotCount;
+    }
+
+	public int GetSlotCount()
+    {
+        return QBits;
+    }
+
 }

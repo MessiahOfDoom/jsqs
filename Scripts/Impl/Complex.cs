@@ -63,5 +63,9 @@ public struct Complex
 	public static unsafe implicit operator Complex(double* d) { 
 		return *(Complex *)d;
 	}
+	public static implicit operator double[](Complex c) => new double[2]{c.real, c.imag};
+	public static implicit operator Complex(double[] d) {
+		return d.Length == 0 ? new Complex() : d.Length == 1 ? new Complex(d[0]) : new Complex(d[0], d[1]);
+	}
 	public override string ToString() => $"{real} + {imag}j";
 }

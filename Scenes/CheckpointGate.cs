@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 
 [GlobalClass, Tool]
-public partial class HadamardGate : GraphNode, ISaveableGate
+public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate, ICheckpointGate
 {
 
 	private int _qbits = 1;
@@ -19,8 +19,7 @@ public partial class HadamardGate : GraphNode, ISaveableGate
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Hadamard Gate";
-		SetSlots();
+		Title = "Checkpoint";
 	}
 
 	public void SetSlots() {
@@ -35,7 +34,7 @@ public partial class HadamardGate : GraphNode, ISaveableGate
 		this.Size = new Vector2(0, 0); //Autosize
 	}
 
-    public Dictionary<string, Variant> Save()
+	public Dictionary<string, Variant> Save()
     {
         return new Dictionary<string, Variant>() {
 			{"Filename", SceneFilePath},
@@ -45,8 +44,19 @@ public partial class HadamardGate : GraphNode, ISaveableGate
 		};
     }
 
-    public void Load(Dictionary<string, Variant> dict)
+	public void Load(Dictionary<string, Variant> dict)
     {
         //Nothing to do here
     }
+
+    public void SetSlotCount(int slotCount)
+    {
+        QBits = slotCount;
+    }
+
+	public int GetSlotCount()
+    {
+        return QBits;
+    }
+
 }

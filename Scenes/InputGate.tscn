@@ -8,5 +8,4 @@ offset_right = 91.0
 offset_bottom = 55.0
 title = "Input Gate"
 script = ExtResource("1_hlva2")
-QBits = 0
 ComplexInputSlotScene = ExtResource("2_pw4sl")
