@@ -53,11 +53,6 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
 		this.Size = new Vector2(0, 0); //Autosize
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
 	public void SetQBit(int index, Vector value) {
 		if (index < 0 || index >= QBits) throw new ArgumentOutOfRangeException("Index out of range");
 		var input = FindChild("slot" + index.ToString(), owned: false);

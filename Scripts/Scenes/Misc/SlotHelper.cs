@@ -68,11 +68,6 @@ public partial class SlotHelper : Control
 		PropertiesChanged();
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
 	public void PropertiesChanged() {
 		GraphNode parent = GetParentOrNull<GraphNode>();
 		if(parent == null) return;

@@ -35,34 +35,7 @@ public partial class QuantumGraph : GraphEdit
 			nodes.Add(outputGate);
 			tree.Add(outputGate.Name, new());
 		}
-/*
-		var testCount = 10	;
-		var testLen = 1 << testCount;
-
-		var v = new Vector(testLen);
-		v[0] = 1;
-		var stopwatch = Stopwatch.StartNew();
-		var m = GateBuilder.Identity(testCount) * GateBuilder.Hadamard(testCount) * GateBuilder.Identity(testCount);
-		stopwatch.Stop();
-		GD.Print(stopwatch.Elapsed);
-		GD.Print(m.getN());
-		stopwatch.Restart();
-		var v2 = m * v;
-		stopwatch.Stop();
-		GD.Print(stopwatch.Elapsed);
-		m.EvalCache();
-		stopwatch.Restart();
-		var v3 = GateBuilder.Hadamard(testCount) * (GateBuilder.Identity(testCount) * (GateBuilder.Hadamard(testCount) * (GateBuilder.Identity(testCount) * v)));
-		stopwatch.Stop();
-		GD.Print(v3[0]);
-		GD.Print(stopwatch.Elapsed);*/
 	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
 	public void OnConnectionRequest(string fromNode, int fromPort, string toNode, int toPort) {
 		var conn = GetConnection(fromNode, fromPort, true);
 		if(conn != null) DisconnectNodeInternal((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"], false);
@@ -171,17 +144,6 @@ public partial class QuantumGraph : GraphEdit
 			set.UnionWith(tree[s]);
 		}
 		tree[currentNode].UnionWith(set);
-	}
-
-	private void PrintNodeTree() {
-		GD.Print("\n\n\n");
-		foreach(GraphNode node in nodes) {
-			GD.Print(node.Name);
-			foreach(var name in tree[node.Name]) {
-				GD.Print("\t" + name);
-			}
-			GD.Print("__________________________");
-		}
 	}
 
 	public void SaveToJson(string filename) {

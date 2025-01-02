@@ -23,17 +23,6 @@ public partial class ComplexInputSlot : Control
 	[Export]
 	public Texture2D InvalidTexture;
 
-
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-	}
-
 	public Vector GetValue() {
 		double rz = Variant.From<string>(RealEditZero.Text).AsDouble();
 		double cz = Variant.From<string>(ComplexEditZero.Text).AsDouble();
