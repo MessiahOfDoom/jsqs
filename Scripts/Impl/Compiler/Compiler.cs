@@ -8,7 +8,7 @@ public class Compiler {
     public delegate Dictionary ConnectionGetter(StringName name, int port);
     public delegate GraphNode NodeGetter(StringName name);
     public static QCircuit compile(int QBitCount, InputGate nodeIn, NodeGetter nodeGetter, ConnectionGetter connectionGetter) {
-        Vector input = new(1 << QBitCount);
+        /*Vector input = new(1 << QBitCount);
         
         //TODO compile input
 
@@ -77,7 +77,81 @@ public class Compiler {
             circuit.parts.Add(currentPart);
             currentPart = new(QBitCount);
         }
+        return circuit;*/
+
+        QCircuit circuit = new QCircuit();
+        GraphNode checkpoint = nodeIn;
+        var runningSlots = new int[QBitCount];
+        for(int i = 0; i < QBitCount; ++i) {
+            runningSlots[i] = i;
+        } 
+        while(!(checkpoint is OutputGate)) {
+            circuit.parts.Add(CompileFromCheckpointToNext(QBitCount, ref checkpoint, nodeGetter, connectionGetter, ref runningSlots));
+        }
         return circuit;
+    }
+
+    public static QCircuitPart CompileFromCheckpointToNext(int QBitCount, ref GraphNode checkpoint, NodeGetter nodeGetter, ConnectionGetter connectionGetter, ref int[] runningSlots) {
+        QCircuitPart part = new(QBitCount);
+        var runningNodes = new GraphNode[QBitCount];
+        for(int i = 0; i < QBitCount; ++i) {
+            runningNodes[i] = checkpoint;
+            runningSlots[i] = i;
+        } 
+        while(!AllAtCheckpointExcluding(runningNodes, checkpoint)){
+            var progress = false;
+            for(int i = 0; i < QBitCount; ++i) {
+                if(runningNodes[i] is ICheckpointGate && runningNodes[i] != checkpoint) continue;
+                if(runningNodes[i] is IMultiInputGate mgate) {
+                    if(!AllInputsAtGate(runningNodes, runningNodes[i])) continue;
+                    var inputs = InputsAtGate(runningNodes, runningNodes[i]);
+                    if(runningNodes[i] is ICompileableGate gate) {
+                        Array<int> bits = new();
+                        for(int j = 0; j < mgate.GetSlotCount(); ++j) {
+                            for(int k = 0; k < inputs.Count; ++k) {
+                                if(runningSlots[inputs[k]] == j) {
+                                    bits.Add(k);
+                                    break;
+                                }
+                            } 
+                            if(bits.Count != j) {
+                                throw new Exception("This circuit is not compilable: Error parsing a Gate with multiple inputs.");
+                            }
+                        }
+                        gate.compile(QBitCount, bits);
+                    }
+                    foreach(int idx in inputs) {
+                        var connection = connectionGetter(runningNodes[idx].Name, runningSlots[idx]);
+                        if(connection == null) throw new Exception("This circuit is not compilable: Some QBits don't reach the output.");
+                        var nextNode = nodeGetter((StringName)connection["to_node"]);
+                        runningNodes[idx] = nextNode;
+                        runningSlots[idx] = (int)connection["to_port"];
+                    }
+                    progress = true;
+                }
+                else {
+                    var connection = connectionGetter(runningNodes[i].Name, runningSlots[i]);
+                    if(connection == null) throw new Exception("This circuit is not compilable: Some QBits don't reach the output.");
+                    var nextNode = nodeGetter((StringName)connection["to_node"]);
+                    if(nextNode is IMeasurementGate) {
+                        if(runningNodes[i] != checkpoint) throw new Exception("This circuit is not compilable: Measurements can only occur directly after a checkpoint.");
+                        part.measurements.Add(i);
+                    }
+                    if(runningNodes[i] is ICompileableGate gate) {
+                        part.compiledMatrix = gate.compile(QBitCount, new Array<int> {i}) * part.compiledMatrix;
+                    }
+                    runningNodes[i] = nextNode;
+                    runningSlots[i] = (int)connection["to_port"];
+                    progress = true;
+                }
+            }
+            if(!progress) throw new Exception("This circuit is not compilable: Compiler ran into an endless loop.");
+        }
+        if(!AllAtSameCheckpoint(runningNodes)) {
+            throw new Exception("This circuit is not compilable: All Qbits need to run through every checkpoint and to the output.");
+        }
+        checkpoint = runningNodes[0];
+        return part;
     }
 
     private static bool AllAtEnd(GraphNode[] nodes) {

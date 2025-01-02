@@ -41,7 +41,7 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
 			slot.Name = "slot" + i.ToString();
 			AddChild(slot);
 			SetSlot(i, false, 0, new(), true, 0, new(1,1,1,1));
-			SetQBit(i, new(1));
+			SetQBit(i, Helpers.ZeroQBit());
 		}
 		if(values != null) {
 			foreach(var pair in values) {
@@ -58,17 +58,17 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
 	{
 	}
 
-	public void SetQBit(int index, Complex value) {
+	public void SetQBit(int index, Vector value) {
 		if (index < 0 || index >= QBits) throw new ArgumentOutOfRangeException("Index out of range");
 		var input = FindChild("slot" + index.ToString(), owned: false);
 		if (input == null || !(input is ComplexInputSlot complexInputSlot)) return;
 		complexInputSlot.SetValue(value);
 	}
 
-	public Complex GetQBit(int index) {
+	public Vector GetQBit(int index) {
 		if (index < 0 || index >= QBits) throw new ArgumentOutOfRangeException("Index out of range");
 		var input = FindChild("slot" + index.ToString(), owned:false);
-		if (input == null || !(input is ComplexInputSlot complexInputSlot)) return 0;
+		if (input == null || !(input is ComplexInputSlot complexInputSlot)) return Helpers.ZeroQBit();
 		return complexInputSlot.GetValue();
 	}
 
@@ -84,8 +84,8 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
     {
         return new Dictionary<string, Variant>() {
 			{"Filename", SceneFilePath},
-			{"PosX", Position.X},
-			{"PosY", Position.Y},
+			{"PosX", PositionOffset.X},
+			{"PosY", PositionOffset.Y},
 			{"Name", Name},
 			{"QBits", QBits},
 			{"QBitValues", GetQBitsForSaving()}
@@ -111,4 +111,29 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
     {
         return QBits;
     }
+
+
+	private bool QBitValid(int index) {
+		if (index < 0 || index >= QBits) throw new ArgumentOutOfRangeException("Index out of range");
+		var input = FindChild("slot" + index.ToString(), owned:false);
+		if (input == null || !(input is ComplexInputSlot complexInputSlot)) return true;
+		return complexInputSlot.QBitValid();
+	}
+	public bool AllQBitsValid() {
+		if(QBits == 0) return false;
+		
+		var _out = true;
+		for(int i = 0; i < QBits; ++i) {
+			_out &= QBitValid(i);
+		}
+		return _out;
+	}
+
+	public Vector GetInput() {
+		var _out = GetQBit(0);
+		for(int i = 1; i < QBits; ++i) {
+			_out = _out ^ GetQBit(i);
+		}
+		return _out;
+	}
 }

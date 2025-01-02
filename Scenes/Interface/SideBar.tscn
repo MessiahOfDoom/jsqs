@@ -1,16 +1,19 @@
-[gd_scene load_steps=5 format=3 uid="uid://jkujowb0yw5p"]
+[gd_scene load_steps=6 format=3 uid="uid://jkujowb0yw5p"]
 
-[ext_resource type="Script" path="res://Scripts/Scenes/SideBar.cs" id="1_5ybyy"]
-[ext_resource type="Script" path="res://Scripts/Scenes/NodeAdderButton.cs" id="2_5pcrv"]
-[ext_resource type="PackedScene" uid="uid://b2418ooy2mvam" path="res://Scenes/HadamardGate.tscn" id="3_asond"]
-[ext_resource type="PackedScene" uid="uid://dt54k18v770ay" path="res://Scenes/CheckpointGate.tscn" id="4_4so86"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/SideBar.cs" id="1_5ybyy"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/NodeAdderButton.cs" id="2_5pcrv"]
+[ext_resource type="PackedScene" uid="uid://b2418ooy2mvam" path="res://Scenes/Gates/HadamardGate.tscn" id="3_asond"]
+[ext_resource type="PackedScene" uid="uid://dt54k18v770ay" path="res://Scenes/Gates/CheckpointGate.tscn" id="4_4so86"]
+[ext_resource type="PackedScene" uid="uid://10mmdjyoql14" path="res://Scenes/Gates/PauliXGate.tscn" id="5_my5c4"]
 
-[node name="SideBar" type="ColorRect"]
+[node name="SideBar" type="ColorRect" node_paths=PackedStringArray("QBitCountLineEdit", "QBitCountSlider")]
 custom_minimum_size = Vector2(255, 720)
 offset_right = 120.0
 offset_bottom = 720.0
 color = Color(0.408329, 0.408329, 0.408329, 1)
 script = ExtResource("1_5ybyy")
+QBitCountLineEdit = NodePath("TabContainer/Settings/Label/QBitCountText")
+QBitCountSlider = NodePath("TabContainer/Settings/QBitCountSlider")
 
 [node name="TabContainer" type="TabContainer" parent="."]
 layout_mode = 0
@@ -58,6 +61,17 @@ metadata/_tab_index = 1
 custom_minimum_size = Vector2(5, 5)
 layout_mode = 2
 
+[node name="NodeAdderButton2" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add Checkpoint"
+script = ExtResource("2_5pcrv")
+Gate = ExtResource("4_4so86")
+parent = NodePath("../../..")
+
+[node name="Spacer2" type="Control" parent="TabContainer/Nodes"]
+custom_minimum_size = Vector2(5, 0)
+layout_mode = 2
+
 [node name="NodeAdderButton" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
 layout_mode = 2
 text = "Add Hadamard Gate"
@@ -65,15 +79,15 @@ script = ExtResource("2_5pcrv")
 Gate = ExtResource("3_asond")
 parent = NodePath("../../..")
 
-[node name="Spacer2" type="Control" parent="TabContainer/Nodes"]
+[node name="Spacer3" type="Control" parent="TabContainer/Nodes"]
 custom_minimum_size = Vector2(5, 0)
 layout_mode = 2
 
-[node name="NodeAdderButton2" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
+[node name="NodeAdderButton3" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
 layout_mode = 2
-text = "Add Checkpoint"
+text = "Add Pauli X Gate"
 script = ExtResource("2_5pcrv")
-Gate = ExtResource("4_4so86")
+Gate = ExtResource("5_my5c4")
 parent = NodePath("../../..")
 
 [node name="Graphs" type="VBoxContainer" parent="TabContainer"]
@@ -83,7 +97,7 @@ layout_mode = 2
 metadata/_tab_index = 2
 
 [node name="Spacer" type="Control" parent="TabContainer/Graphs"]
-custom_minimum_size = Vector2(5, 600)
+custom_minimum_size = Vector2(5, 570)
 layout_mode = 2
 
 [node name="SaveButton" type="Button" parent="TabContainer/Graphs"]
@@ -97,6 +111,14 @@ layout_mode = 2
 layout_mode = 2
 text = "Load from JSON file"
 
+[node name="Spacer3" type="Control" parent="TabContainer/Graphs"]
+layout_mode = 2
+
+[node name="RunButton" type="Button" parent="TabContainer/Graphs"]
+layout_mode = 2
+text = "Compile and Run"
+
 [connection signal="value_changed" from="TabContainer/Settings/QBitCountSlider" to="." method="OnQBitCountSliderChanged"]
 [connection signal="pressed" from="TabContainer/Graphs/SaveButton" to="." method="SaveButtonPressed"]
 [connection signal="pressed" from="TabContainer/Graphs/LoadButton" to="." method="LoadButtonPressed"]
+[connection signal="pressed" from="TabContainer/Graphs/RunButton" to="." method="CompileButtonPressed"]

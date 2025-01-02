@@ -16,6 +16,9 @@ public partial class SideBar : Node
 
     [Signal]
     public delegate void LoadFromJsonEventHandler();
+    
+    [Signal]
+    public delegate void CompileAndRunEventHandler();
 
     [Export]
     public LineEdit QBitCountLineEdit;
@@ -74,6 +77,10 @@ public partial class SideBar : Node
 
     public void LoadButtonPressed() {
         EmitSignal(SignalName.LoadFromJson);
+    }
+
+    public void CompileButtonPressed() {
+        EmitSignal(SignalName.CompileAndRun);
     }
 
 }

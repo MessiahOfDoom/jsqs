@@ -49,7 +49,7 @@ public record Helpers {
 	}
 
 	public static void AddCloseButton(GraphNode node, QuantumGraph parent) {
-		var CloseButtonScene = GD.Load<PackedScene>(ProjectSettings.GlobalizePath("res://Scenes/CloseButton.tscn"));
+		var CloseButtonScene = GD.Load<PackedScene>(ProjectSettings.GlobalizePath("res://Scenes/Misc/CloseButton.tscn"));
 		Node closeButton = CloseButtonScene.Instantiate();
 		if(closeButton is Button) {
 			closeButton.Connect("pressed", Callable.From(() => {
@@ -58,6 +58,18 @@ public record Helpers {
 			}));
 		}
 		node.GetTitlebarHBox().AddChild(closeButton);
+	}
+
+	public static Vector ZeroQBit() {
+		Vector _out = new(2);
+		_out[0] = 1;
+		return _out;
+	}
+
+	public static Vector OneQBit() {
+		Vector _out = new(2);
+		_out[1] = 1;
+		return _out;
 	}
 
 }

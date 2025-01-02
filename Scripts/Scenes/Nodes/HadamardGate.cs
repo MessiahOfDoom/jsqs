@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 
 [GlobalClass, Tool]
-public partial class HadamardGate : GraphNode, ISaveableGate
+public partial class HadamardGate : GraphNode, ISaveableGate, ICompileableGate
 {
 
 	private int _qbits = 1;
@@ -39,8 +39,8 @@ public partial class HadamardGate : GraphNode, ISaveableGate
     {
         return new Dictionary<string, Variant>() {
 			{"Filename", SceneFilePath},
-			{"PosX", Position.X},
-			{"PosY", Position.Y},
+			{"PosX", PositionOffset.X},
+			{"PosY", PositionOffset.Y},
 			{"Name", Name}
 		};
     }
@@ -49,4 +49,14 @@ public partial class HadamardGate : GraphNode, ISaveableGate
     {
         //Nothing to do here
     }
+
+    public LazyMatrix compile(int QBitCount, Array<int> ForQBits)
+    {
+        if(ForQBits.Count != 1) throw new ArgumentException("Compiling for an invalid number of QBits");
+		var bit = ForQBits[0];
+		if(bit == 0) return GateBuilder.Hadamard(1) ^ GateBuilder.Identity(QBitCount - 1);
+		else if(bit == QBitCount - 1) return GateBuilder.Identity(QBitCount - 1) ^ GateBuilder.Hadamard(1);
+		else return GateBuilder.Identity(bit) ^ GateBuilder.Hadamard(1) ^ GateBuilder.Identity(QBitCount - bit - 1);
+    }
+
 }

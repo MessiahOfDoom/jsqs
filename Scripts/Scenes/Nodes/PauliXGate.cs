@@ -2,8 +2,8 @@ using Godot;
 using Godot.Collections;
 using System;
 
-[Tool]
-public partial class OutputGate : GraphNode, ISaveableGate, IResizeableGate, ICheckpointGate
+[GlobalClass, Tool]
+public partial class PauliXGate : GraphNode, ISaveableGate, ICompileableGate
 {
 
 	private int _qbits = 1;
@@ -15,10 +15,11 @@ public partial class OutputGate : GraphNode, ISaveableGate, IResizeableGate, ICh
 			SetSlots();
 		} 
 	}
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Output";
+		Title = "Pauli X Gate";
 		SetSlots();
 	}
 
@@ -27,7 +28,7 @@ public partial class OutputGate : GraphNode, ISaveableGate, IResizeableGate, ICh
 			RemoveChild(c);
 		}
 		for(int i = 0; i < QBits; ++i) {
-			var helper = new SlotHelper(true, false, 0, 0);
+			var helper = new SlotHelper(true, true, 0, 0);
 			helper.CustomMinimumSize = new Vector2(0, 35);
 			AddChild(helper);
 		}
@@ -49,14 +50,13 @@ public partial class OutputGate : GraphNode, ISaveableGate, IResizeableGate, ICh
         //Nothing to do here
     }
 
-    public void SetSlotCount(int slotCount)
+    public LazyMatrix compile(int QBitCount, Array<int> ForQBits)
     {
-        QBits = slotCount;
-    }
-
-	public int GetSlotCount()
-    {
-        return QBits;
+        if(ForQBits.Count != 1) throw new ArgumentException("Compiling for an invalid number of QBits");
+		var bit = ForQBits[0];
+		if(bit == 0) return GateBuilder.PauliX() ^ GateBuilder.Identity(QBitCount - 1);
+		else if(bit == QBitCount - 1) return GateBuilder.Identity(QBitCount - 1) ^ GateBuilder.PauliX();
+		else return GateBuilder.Identity(bit) ^ GateBuilder.PauliX() ^ GateBuilder.Identity(QBitCount - bit - 1);
     }
 
 }

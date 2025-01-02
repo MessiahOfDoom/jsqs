@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ca44uvkajq8jw"]
 
-[ext_resource type="Texture2D" uid="uid://bfynmcdxiq51k" path="res://Images/close_icon.png" id="1_3uhgx"]
+[ext_resource type="Texture2D" uid="uid://bfynmcdxiq51k" path="res://Images/close_icon.png" id="1_s87ck"]
 
 [node name="CloseButton" type="Button"]
 custom_minimum_size = Vector2(20, 20)
@@ -11,4 +11,4 @@ scale = Vector2(0.5, 0.5)
 [node name="CloseIcon" type="Sprite2D" parent="."]
 position = Vector2(10, 10)
 scale = Vector2(0.375, 0.375)
-texture = ExtResource("1_3uhgx")
+texture = ExtResource("1_s87ck")

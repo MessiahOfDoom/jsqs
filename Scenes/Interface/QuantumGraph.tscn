@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3 uid="uid://tki3c4yssxg7"]
 
-[ext_resource type="PackedScene" uid="uid://jkujowb0yw5p" path="res://Scenes/SideBar.tscn" id="1_7w12w"]
-[ext_resource type="Script" path="res://Scripts/Scenes/QuantumGraph.cs" id="1_ohimh"]
-[ext_resource type="PackedScene" uid="uid://bjf7efc0k0dwc" path="res://Scenes/InputGate.tscn" id="3_e4h7l"]
-[ext_resource type="PackedScene" uid="uid://dgy0am3ijg5dd" path="res://Scenes/OutputGate.tscn" id="4_6alay"]
-[ext_resource type="Script" path="res://Scripts/Scenes/SaveAndLoadDialog.cs" id="4_la3wp"]
+[ext_resource type="PackedScene" uid="uid://jkujowb0yw5p" path="res://Scenes/Interface/SideBar.tscn" id="1_rways"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/QuantumGraph.cs" id="2_smrra"]
+[ext_resource type="PackedScene" uid="uid://bjf7efc0k0dwc" path="res://Scenes/Gates/InputGate.tscn" id="3_2jhhe"]
+[ext_resource type="PackedScene" uid="uid://dgy0am3ijg5dd" path="res://Scenes/Gates/OutputGate.tscn" id="4_1cty8"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/SaveAndLoadDialog.cs" id="5_hmcal"]
 
 [sub_resource type="Theme" id="Theme_wg4k2"]
 BoxContainer/constants/separation = 1
@@ -14,24 +14,22 @@ offset_right = 40.0
 offset_bottom = 40.0
 theme = SubResource("Theme_wg4k2")
 
-[node name="SideBar" parent="." node_paths=PackedStringArray("QBitCountLineEdit", "QBitCountSlider") instance=ExtResource("1_7w12w")]
+[node name="SideBar" parent="." instance=ExtResource("1_rways")]
 layout_mode = 2
-QBitCountLineEdit = NodePath("TabContainer/Settings/Label/QBitCountText")
-QBitCountSlider = NodePath("TabContainer/Settings/QBitCountSlider")
 
 [node name="GraphEdit" type="GraphEdit" parent="." node_paths=PackedStringArray("inputGate", "outputGate")]
 custom_minimum_size = Vector2(1024, 720)
 layout_mode = 2
-script = ExtResource("1_ohimh")
+script = ExtResource("2_smrra")
 inputGate = NodePath("InputGate")
 outputGate = NodePath("OutputGate")
 
-[node name="InputGate" parent="GraphEdit" instance=ExtResource("3_e4h7l")]
+[node name="InputGate" parent="GraphEdit" instance=ExtResource("3_2jhhe")]
 layout_mode = 0
 offset_left = 200.0
 offset_top = 200.0
-offset_right = 426.0
-offset_bottom = 290.0
+offset_right = 471.0
+offset_bottom = 325.0
 mouse_filter = 1
 position_offset = Vector2(200, 200)
 slot/0/left_enabled = false
@@ -45,7 +43,7 @@ slot/0/right_icon = null
 slot/0/draw_stylebox = true
 QBits = 1
 
-[node name="OutputGate" parent="GraphEdit" instance=ExtResource("4_6alay")]
+[node name="OutputGate" parent="GraphEdit" instance=ExtResource("4_1cty8")]
 layout_mode = 2
 offset_left = 600.0
 offset_top = 200.0
@@ -60,9 +58,10 @@ size = Vector2i(325, 175)
 access = 2
 filters = PackedStringArray("*.json;JSON Files", "*.*;All Files")
 use_native_dialog = true
-script = ExtResource("4_la3wp")
+script = ExtResource("5_hmcal")
 
 [connection signal="AddNode" from="SideBar" to="GraphEdit" method="AddGraphNodeFromScene"]
+[connection signal="CompileAndRun" from="SideBar" to="GraphEdit" method="CompileAndRun"]
 [connection signal="LoadFromJson" from="SideBar" to="FileDialog" method="OnLoadSignal"]
 [connection signal="SaveToJson" from="SideBar" to="FileDialog" method="OnSaveSignal"]
 [connection signal="SetQBitCount" from="SideBar" to="GraphEdit" method="OnSetSlotCount"]

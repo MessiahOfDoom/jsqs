@@ -34,9 +34,7 @@ public partial class QuantumGraph : GraphEdit
 		if(outputGate != null) {
 			nodes.Add(outputGate);
 			tree.Add(outputGate.Name, new());
-		}	
-
-
+		}
 /*
 		var testCount = 10	;
 		var testLen = 1 << testCount;
@@ -286,8 +284,20 @@ public partial class QuantumGraph : GraphEdit
 		return nodes.Find(x => ((string)x.Name).Equals((string)name, StringComparison.InvariantCultureIgnoreCase));
 	}
 
-	public QCircuit compile() {
+	public QCircuit Compile() {
 		return Compiler.compile(latestSlotCount, inputGate, NodeByName, (name, port) => GetConnection(name, port, true));
+	}
+
+	public void CompileAndRun() {
+		if(!inputGate.AllQBitsValid()) {
+			GD.Print("Not all QBits are valid, cannot run");
+			return;
+		}
+		QCircuit c = Compile();
+		Vector input = inputGate.GetInput();
+		GD.Print("Running Graph with input: " + input);
+		var output = c.RunWithInput(input);
+		GD.Print("Got output: " + output);
 	}
 
 }

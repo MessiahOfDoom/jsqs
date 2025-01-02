@@ -4,11 +4,14 @@ using System;
 using System.Collections.Generic;
 
 public record QCircuit {
-    public Vector Input;
     public List<QCircuitPart> parts = new();
 
-    public QCircuit(Vector input) {
-        Input = input;
+    public Vector RunWithInput(Vector input) {
+        var output = input;
+        for(int i = 0; i < parts.Count; ++i) {
+            output = parts[i].RunWithInput(output);
+        }
+        return output;
     }
 }
 
@@ -18,5 +21,10 @@ public record QCircuitPart {
 
     public QCircuitPart(int QBitCount) {
         compiledMatrix = GateBuilder.Identity(QBitCount);        
+    }
+
+    public Vector RunWithInput(Vector input) {
+        //TODO Measurements
+        return compiledMatrix * input;
     }
 }

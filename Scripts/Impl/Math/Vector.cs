@@ -108,4 +108,30 @@ public struct Vector
         }
         return _out + "]";
     }
+
+    public static implicit operator Vector(double[] d) {
+        if(d.Length % 2 != 0) throw new ArgumentException("Input Array has an invalid Length");
+        Vector _out = new(d.Length / 2);
+        for(int i = 0; i < d.Length / 2; ++i) {
+            _out[i] = new(d[i * 2], d[i * 2 + 1]);
+        }
+        return _out;
+    }
+
+    public static implicit operator double[](Vector v) {
+        double[] _out = new double[v.length * 2];
+        for(int i = 0; i < v.length; ++i) {
+            _out[i * 2] = v[i].real;
+            _out[i * 2 + 1] = v[i].imag;
+        }
+        return _out;
+    }
+
+    public double Abs2() {
+        double total = 0;
+        foreach(Complex c in values) {
+            total += c.Abs2();
+        }
+        return total;
+    }
 }

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dt54k18v770ay"]
 
-[ext_resource type="Script" path="res://Scenes/CheckpointGate.cs" id="1_2rqd1"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Nodes/CheckpointGate.cs" id="1_2rqd1"]
 
 [node name="CheckpointGate" type="GraphNode"]
 offset_right = 9.0

@@ -42,5 +42,12 @@ public partial class GateBuilder
 		return Hadamard(qbits / 2) ^ Hadamard(qbits - (qbits / 2));
 	}
 
+	public static LazyMatrix PauliX() {
+		SparseMatrix _out = new(2, 2);
+		_out[0, 1] = 1;
+		_out[1, 0] = 1;
+		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
+	}
+
 
 }
