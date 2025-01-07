@@ -27,7 +27,7 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Input Gate";
+		Title = "Input Gate    ";
 		SetSlots(null);
 	}
 
@@ -35,7 +35,7 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
 		foreach(var c in GetChildren()){
 			RemoveChild(c);
 		}
-		ComplexInputSlotScene ??= GD.Load<PackedScene>(ProjectSettings.GlobalizePath("res://Scenes/ComplexInputSlot.tscn"));
+		ComplexInputSlotScene ??= GD.Load<PackedScene>(ProjectSettings.GlobalizePath("res://Scenes/Misc/ComplexInputSlot.tscn"));
 		for(int i = 0; i < QBits; ++i) {
 			var slot = ComplexInputSlotScene.Instantiate();
 			slot.Name = "slot" + i.ToString();

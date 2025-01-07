@@ -19,7 +19,7 @@ public partial class HadamardGate : GraphNode, ISaveableGate, ICompileableGate
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Hadamard Gate";
+		Title = "Hadamard Gate    ";
 		SetSlots();
 	}
 

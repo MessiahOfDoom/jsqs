@@ -25,6 +25,7 @@ public record QCircuitPart {
 
     public Vector RunWithInput(Vector input) {
         //TODO Measurements
+        GD.Print(compiledMatrix);
         return compiledMatrix * input;
     }
 }

@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://jkujowb0yw5p"]
+[gd_scene load_steps=8 format=3 uid="uid://jkujowb0yw5p"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/SideBar.cs" id="1_5ybyy"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/NodeAdderButton.cs" id="2_5pcrv"]
 [ext_resource type="PackedScene" uid="uid://b2418ooy2mvam" path="res://Scenes/Gates/HadamardGate.tscn" id="3_asond"]
 [ext_resource type="PackedScene" uid="uid://dt54k18v770ay" path="res://Scenes/Gates/CheckpointGate.tscn" id="4_4so86"]
 [ext_resource type="PackedScene" uid="uid://10mmdjyoql14" path="res://Scenes/Gates/PauliXGate.tscn" id="5_my5c4"]
+[ext_resource type="PackedScene" uid="uid://cxs8naqhablsn" path="res://Scenes/Gates/PauliYGate.tscn" id="6_sya1p"]
+[ext_resource type="PackedScene" uid="uid://w841mpiqmgue" path="res://Scenes/Gates/PauliZGate.tscn" id="7_htb3h"]
 
 [node name="SideBar" type="ColorRect" node_paths=PackedStringArray("QBitCountLineEdit", "QBitCountSlider")]
 custom_minimum_size = Vector2(255, 720)
@@ -69,7 +71,7 @@ Gate = ExtResource("4_4so86")
 parent = NodePath("../../..")
 
 [node name="Spacer2" type="Control" parent="TabContainer/Nodes"]
-custom_minimum_size = Vector2(5, 0)
+custom_minimum_size = Vector2(5, 5)
 layout_mode = 2
 
 [node name="NodeAdderButton" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
@@ -80,7 +82,7 @@ Gate = ExtResource("3_asond")
 parent = NodePath("../../..")
 
 [node name="Spacer3" type="Control" parent="TabContainer/Nodes"]
-custom_minimum_size = Vector2(5, 0)
+custom_minimum_size = Vector2(5, 5)
 layout_mode = 2
 
 [node name="NodeAdderButton3" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
@@ -88,6 +90,28 @@ layout_mode = 2
 text = "Add Pauli X Gate"
 script = ExtResource("2_5pcrv")
 Gate = ExtResource("5_my5c4")
+parent = NodePath("../../..")
+
+[node name="Spacer4" type="Control" parent="TabContainer/Nodes"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+
+[node name="NodeAdderButton4" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add Pauli Y Gate"
+script = ExtResource("2_5pcrv")
+Gate = ExtResource("6_sya1p")
+parent = NodePath("../../..")
+
+[node name="Spacer5" type="Control" parent="TabContainer/Nodes"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+
+[node name="NodeAdderButton5" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add Pauli Z Gate"
+script = ExtResource("2_5pcrv")
+Gate = ExtResource("7_htb3h")
 parent = NodePath("../../..")
 
 [node name="Graphs" type="VBoxContainer" parent="TabContainer"]

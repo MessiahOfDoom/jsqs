@@ -110,7 +110,7 @@ public class Compiler {
                         for(int j = 0; j < mgate.GetSlotCount(); ++j) {
                             for(int k = 0; k < inputs.Count; ++k) {
                                 if(runningSlots[inputs[k]] == j) {
-                                    bits.Add(k);
+                                    bits.Add(QBitCount - k - 1);
                                     break;
                                 }
                             } 
@@ -138,7 +138,7 @@ public class Compiler {
                         part.measurements.Add(i);
                     }
                     if(runningNodes[i] is ICompileableGate gate) {
-                        part.compiledMatrix = gate.compile(QBitCount, new Array<int> {i}) * part.compiledMatrix;
+                        part.compiledMatrix = gate.compile(QBitCount, new Array<int> {QBitCount - i - 1}) * part.compiledMatrix;
                     }
                     runningNodes[i] = nextNode;
                     runningSlots[i] = (int)connection["to_port"];

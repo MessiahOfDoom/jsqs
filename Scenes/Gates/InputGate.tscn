@@ -4,8 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://chg6g2ofbxogm" path="res://Scenes/Misc/ComplexInputSlot.tscn" id="2_pw4sl"]
 
 [node name="InputGate" type="GraphNode"]
-offset_right = 91.0
+offset_right = 107.0
 offset_bottom = 55.0
-title = "Input Gate"
+title = "Input Gate    "
 script = ExtResource("1_hlva2")
 ComplexInputSlotScene = ExtResource("2_pw4sl")

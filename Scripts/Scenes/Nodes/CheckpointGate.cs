@@ -19,7 +19,7 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Checkpoint";
+		Title = "Checkpoint    ";
 	}
 
 	public void SetSlots() {
@@ -38,8 +38,8 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
     {
         return new Dictionary<string, Variant>() {
 			{"Filename", SceneFilePath},
-			{"PosX", Position.X},
-			{"PosY", Position.Y},
+			{"PosX", PositionOffset.X},
+			{"PosY", PositionOffset.Y},
 			{"Name", Name}
 		};
     }

@@ -49,5 +49,17 @@ public partial class GateBuilder
 		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
 	}
 
+	public static LazyMatrix PauliY() {
+		SparseMatrix _out = new(2, 2);
+		_out[0, 1] = new(0, -1);
+		_out[1, 0] = new(0, 1);
+		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
+	}
 
+	public static LazyMatrix PauliZ() {
+		SparseMatrix _out = new(2, 2);
+		_out[1, 0] = 1;
+		_out[0, 1] = -1;
+		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
+	}
 }

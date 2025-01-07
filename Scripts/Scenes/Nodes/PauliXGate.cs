@@ -19,7 +19,7 @@ public partial class PauliXGate : GraphNode, ISaveableGate, ICompileableGate
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Pauli X Gate";
+		Title = "Pauli X Gate    ";
 		SetSlots();
 	}
 
