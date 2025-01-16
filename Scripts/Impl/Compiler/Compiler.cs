@@ -110,19 +110,23 @@ public class Compiler {
                         for(int j = 0; j < mgate.GetSlotCount(); ++j) {
                             for(int k = 0; k < inputs.Count; ++k) {
                                 if(runningSlots[inputs[k]] == j) {
-                                    bits.Add(QBitCount - k - 1);
+                                    bits.Add(QBitCount - inputs[k] - 1);
                                     break;
                                 }
                             } 
-                            if(bits.Count != j) {
+                            if(bits.Count != j + 1) {
+                                Helpers.ShowErrorOnPort(runningNodes[i], j, true);
                                 throw new Exception("This circuit is not compilable: Error parsing a Gate with multiple inputs.");
                             }
                         }
-                        gate.compile(QBitCount, bits);
+                        part.compiledMatrix = gate.compile(QBitCount, bits) * part.compiledMatrix;
                     }
                     foreach(int idx in inputs) {
                         var connection = connectionGetter(runningNodes[idx].Name, runningSlots[idx]);
-                        if(connection == null) throw new Exception("This circuit is not compilable: Some QBits don't reach the output.");
+                        if(connection == null) {
+                            Helpers.ShowErrorOnPort(runningNodes[i], runningSlots[idx], false);
+                            throw new Exception("This circuit is not compilable: Some QBits don't reach the output.");
+                        }
                         var nextNode = nodeGetter((StringName)connection["to_node"]);
                         runningNodes[idx] = nextNode;
                         runningSlots[idx] = (int)connection["to_port"];
@@ -131,10 +135,16 @@ public class Compiler {
                 }
                 else {
                     var connection = connectionGetter(runningNodes[i].Name, runningSlots[i]);
-                    if(connection == null) throw new Exception("This circuit is not compilable: Some QBits don't reach the output.");
+                    if(connection == null) {
+                        Helpers.ShowErrorOnPort(runningNodes[i], runningSlots[i], false);
+                        throw new Exception("This circuit is not compilable: Some QBits don't reach the output.");
+                    } 
                     var nextNode = nodeGetter((StringName)connection["to_node"]);
                     if(nextNode is IMeasurementGate) {
-                        if(runningNodes[i] != checkpoint) throw new Exception("This circuit is not compilable: Measurements can only occur directly after a checkpoint.");
+                        if(runningNodes[i] != checkpoint) {
+                            Helpers.ShowErrorOnNode(nextNode);
+                            throw new Exception("This circuit is not compilable: Measurements can only occur directly after a checkpoint.");
+                        } 
                         part.measurements.Add(i);
                     }
                     if(runningNodes[i] is ICompileableGate gate) {
@@ -148,6 +158,13 @@ public class Compiler {
             if(!progress) throw new Exception("This circuit is not compilable: Compiler ran into an endless loop.");
         }
         if(!AllAtSameCheckpoint(runningNodes)) {
+            var checkpoints = new List<GraphNode>();
+            foreach(var n in runningNodes) {
+                if(!checkpoints.Contains(n)) checkpoints.Add(n);
+            }
+            foreach(var n in checkpoints) {
+                Helpers.ShowErrorOnNode(n);
+            }
             throw new Exception("This circuit is not compilable: All Qbits need to run through every checkpoint and to the output.");
         }
         checkpoint = runningNodes[0];

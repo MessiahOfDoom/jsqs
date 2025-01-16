@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://cw84uakf6cnhn"]
+
+[ext_resource type="Script" path="res://Scripts/Scenes/Nodes/CNotGate.cs" id="1_j5bel"]
+[ext_resource type="Texture2D" uid="uid://cn68lsx66y4pt" path="res://Images/CNot.png" id="2_4qolb"]
+
+[node name="CNotGate" type="GraphNode"]
+offset_right = 104.0
+offset_bottom = 129.0
+title = "CNot Gate    "
+slot/0/left_enabled = true
+slot/0/left_type = 0
+slot/0/left_color = Color(1, 1, 1, 1)
+slot/0/left_icon = null
+slot/0/right_enabled = true
+slot/0/right_type = 0
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+slot/1/left_enabled = true
+slot/1/left_type = 0
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = true
+slot/1/right_type = 0
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
+script = ExtResource("1_j5bel")
+
+[node name="CNot" type="Sprite2D" parent="."]
+position = Vector2(55, 79)
+texture = ExtResource("2_4qolb")

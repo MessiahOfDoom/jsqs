@@ -62,4 +62,13 @@ public partial class GateBuilder
 		_out[0, 1] = -1;
 		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
 	}
+
+	public static LazyMatrix CNot() {
+		var _out = new SparseMatrix(4,4);
+		_out[0,0] = 1;
+		_out[1,1] = 1;
+		_out[2,3] = 1;
+		_out[3,2] = 1;
+		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
+	}
 }

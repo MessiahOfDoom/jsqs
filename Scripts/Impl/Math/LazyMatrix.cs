@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 
 public struct LazyMatrix: IMatrix {
 
@@ -16,17 +17,21 @@ public struct LazyMatrix: IMatrix {
 
 	private Dictionary<long, Complex> cache = new Dictionary<long, Complex>();
 
+	private int[] bitOrder;
+
 	public LazyMatrix(IMatrix left, LazyMatrixOperation op) {
 		this.left = left;
 		this.rightM = left;
 		this.rightC = default(Complex);
 		this.op = op;
+		bitOrder = new int[0];
 	}
 	public LazyMatrix(IMatrix left, IMatrix right, LazyMatrixOperation op) {
 		this.left = left;
 		this.rightM = right;
 		this.rightC = default(Complex);
 		this.op = op;
+		bitOrder = new int[0];
 	}
 
 	public LazyMatrix(IMatrix left, Complex right, LazyMatrixOperation op) {
@@ -34,11 +39,20 @@ public struct LazyMatrix: IMatrix {
 		this.rightM = left;
 		this.rightC = right;
 		this.op = op;
+		bitOrder = new int[0];
+	}
+
+	public LazyMatrix(IMatrix left, LazyMatrixOperation op, int[] bitOrder) {
+		this.left = left;
+		this.rightM = left;
+		this.rightC = default(Complex);
+		this.op = op;
+		this.bitOrder = bitOrder;
 	}
 
 	public Complex this[int y, int x] {
 		get {
-			if(EnableCaching && getN() >= CachingMinSize && op != LazyMatrixOperation.Hold) {
+			if(EnableCaching && getN() >= CachingMinSize && op != LazyMatrixOperation.Hold && op != LazyMatrixOperation.Shuffle) {
 				calls++;
 				long idx = ((long)y) << 32 | (long)x; 
 				if(!cache.ContainsKey(idx)) {
@@ -95,6 +109,9 @@ public struct LazyMatrix: IMatrix {
 				case LazyMatrixOperation.Hold: {
 					return left[y, x];
 				}
+				case LazyMatrixOperation.Shuffle: {
+					return left[getActualXY(y), getActualXY(x)];
+				}
 				case LazyMatrixOperation.MultComplex: {
 					return (left[y, x] * rightC);
 				}
@@ -135,6 +152,9 @@ public struct LazyMatrix: IMatrix {
 			case LazyMatrixOperation.Hold: {
 				return left.getN();
 			}
+			case LazyMatrixOperation.Shuffle: {
+				return left.getN();
+			}
 			case LazyMatrixOperation.MultComplex: {
 				return left.getN();
 			}
@@ -157,6 +177,9 @@ public struct LazyMatrix: IMatrix {
 	{
 		switch (this.op) {
 			case LazyMatrixOperation.Hold: {
+				return left.getM();
+			}
+			case LazyMatrixOperation.Shuffle: {
 				return left.getM();
 			}
 			case LazyMatrixOperation.MultComplex: {
@@ -203,6 +226,16 @@ public struct LazyMatrix: IMatrix {
 		for(int i = 0; i < getM(); i++) {
 			for(int j = 0; j < getN(); j++) {
 				_out += $"m{i}{j} = {this[i, j] + (j == getN() - 1 ? "\n": ", ")}";
+			}
+		}
+		return _out + "]";
+	}
+
+	public string test() {
+		string _out = $"{getM()} by {getN()} Matrix: [\n";
+		for(int i = 0; i < getM(); i++) {
+			for(int j = 0; j < getN(); j++) {
+				_out += $"{this[i, j].real + (j == getN() - 1 ? "\n": ", ")}";
 			}
 		}
 		return _out + "]";
@@ -261,6 +294,14 @@ public struct LazyMatrix: IMatrix {
     {
         return op == LazyMatrixOperation.Transpose ? left.RowKeys(col) : left.ColKeys(col);
     }
+
+	private int getActualXY(int xOrY) {
+		int res = 0;
+		for(int i = 0; i < bitOrder.Length; ++i) {
+			res |= ((xOrY & (1 << bitOrder[i])) >> bitOrder[i]) << i;
+		}
+		return res;
+	}
 }
 
 public enum LazyMatrixOperation {
@@ -268,5 +309,6 @@ public enum LazyMatrixOperation {
 	MultMatrix,
 	Tensor,
 	Transpose,
-	Hold
+	Hold,
+	Shuffle
 }

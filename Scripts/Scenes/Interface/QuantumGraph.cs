@@ -20,15 +20,20 @@ public partial class QuantumGraph : GraphEdit
 	[Export]
 	private OutputGate outputGate;
 
+	[Signal]
+	public delegate void CircuitCompileErrorEventHandler(string description);
+
 	private int latestSlotCount = 1;
 
 	public override void _Ready()
 	{
+		GD.Print(new CNotGate().compile(3, new(){2,0}));
+
 		inputGate ??= FindChild("InputGate", recursive:true, owned:false) as InputGate;
 		if(inputGate != null) {
 			nodes.Add(inputGate);
 			tree.Add(inputGate.Name, new());
-		}	
+		}
 
 		outputGate ??= FindChild("OutputGate", recursive:true, owned:false) as OutputGate;
 		if(outputGate != null) {
@@ -255,11 +260,15 @@ public partial class QuantumGraph : GraphEdit
 			GD.Print("Not all QBits are valid, cannot run");
 			return;
 		}
-		QCircuit c = Compile();
-		Vector input = inputGate.GetInput();
-		GD.Print("Running Graph with input: " + input);
-		var output = c.RunWithInput(input);
-		GD.Print("Got output: " + output);
+		try {
+			QCircuit c = Compile();
+			Vector input = inputGate.GetInput();
+			GD.Print("Running Graph with input: " + input);
+			var output = c.RunWithInput(input);
+			GD.Print("Got output: " + output);
+		} catch (Exception ex) {
+			EmitSignal(SignalName.CircuitCompileError, ex.Message);
+		}
 	}
 
 }

@@ -1,18 +1,17 @@
-[gd_scene load_steps=7 format=3 uid="uid://tki3c4yssxg7"]
+[gd_scene load_steps=8 format=3 uid="uid://tki3c4yssxg7"]
 
+[ext_resource type="Theme" uid="uid://crfma0mdfxqgn" path="res://Resources/GlobalTheme.theme" id="1_lga6u"]
 [ext_resource type="PackedScene" uid="uid://jkujowb0yw5p" path="res://Scenes/Interface/SideBar.tscn" id="1_rways"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/QuantumGraph.cs" id="2_smrra"]
 [ext_resource type="PackedScene" uid="uid://bjf7efc0k0dwc" path="res://Scenes/Gates/InputGate.tscn" id="3_2jhhe"]
 [ext_resource type="PackedScene" uid="uid://dgy0am3ijg5dd" path="res://Scenes/Gates/OutputGate.tscn" id="4_1cty8"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/SaveAndLoadDialog.cs" id="5_hmcal"]
-
-[sub_resource type="Theme" id="Theme_wg4k2"]
-BoxContainer/constants/separation = 1
+[ext_resource type="Script" path="res://Scenes/Interface/ErrorDialog.cs" id="7_d2nl5"]
 
 [node name="HBoxContainer" type="HBoxContainer"]
 offset_right = 40.0
 offset_bottom = 40.0
-theme = SubResource("Theme_wg4k2")
+theme = ExtResource("1_lga6u")
 
 [node name="SideBar" parent="." instance=ExtResource("1_rways")]
 layout_mode = 2
@@ -29,7 +28,7 @@ layout_mode = 0
 offset_left = 200.0
 offset_top = 200.0
 offset_right = 471.0
-offset_bottom = 325.0
+offset_bottom = 324.0
 mouse_filter = 1
 position_offset = Vector2(200, 200)
 slot/0/left_enabled = false
@@ -47,10 +46,11 @@ QBits = 1
 layout_mode = 2
 offset_left = 600.0
 offset_top = 200.0
-offset_right = 664.0
-offset_bottom = 290.0
+offset_right = 679.0
+offset_bottom = 289.0
 mouse_filter = 1
 position_offset = Vector2(600, 200)
+title = "Output    "
 
 [node name="FileDialog" type="FileDialog" parent="."]
 title = "Save as"
@@ -60,11 +60,16 @@ filters = PackedStringArray("*.json;JSON Files", "*.*;All Files")
 use_native_dialog = true
 script = ExtResource("5_hmcal")
 
+[node name="AcceptDialog" type="AcceptDialog" parent="."]
+initial_position = 2
+script = ExtResource("7_d2nl5")
+
 [connection signal="AddNode" from="SideBar" to="GraphEdit" method="AddGraphNodeFromScene"]
 [connection signal="CompileAndRun" from="SideBar" to="GraphEdit" method="CompileAndRun"]
 [connection signal="LoadFromJson" from="SideBar" to="FileDialog" method="OnLoadSignal"]
 [connection signal="SaveToJson" from="SideBar" to="FileDialog" method="OnSaveSignal"]
 [connection signal="SetQBitCount" from="SideBar" to="GraphEdit" method="OnSetSlotCount"]
+[connection signal="CircuitCompileError" from="GraphEdit" to="AcceptDialog" method="ShowError"]
 [connection signal="connection_from_empty" from="GraphEdit" to="GraphEdit" method="OnConnectionToFromEmpty" binds= [false]]
 [connection signal="connection_request" from="GraphEdit" to="GraphEdit" method="OnConnectionRequest"]
 [connection signal="connection_to_empty" from="GraphEdit" to="GraphEdit" method="OnConnectionToFromEmpty" binds= [true]]

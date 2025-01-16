@@ -1,7 +1,7 @@
 using Godot;
+using Godot.Collections;
 using System;
-using System.Globalization;
-using System.IO;
+using System.Linq;
 
 public record Helpers {
 	public static double[] DoublesFromBytes(byte[] bytes) {
@@ -69,6 +69,73 @@ public record Helpers {
 	public static Vector OneQBit() {
 		Vector _out = new(2);
 		_out[1] = 1;
+		return _out;
+	}
+
+	public static void ShowErrorOnNode(GraphNode node) {
+		var stylebox = node.GetThemeStylebox("titlebar");
+		var styleboxSel = node.GetThemeStylebox("titlebar_selected");
+		if((stylebox is StyleBoxFlat flat) && (styleboxSel is StyleBoxFlat flatSel)) {
+			var color = flat.BgColor;
+			var colorSel = flatSel.BgColor;
+			var red = new Color(1, 0, 0);
+			var flatNew = flat.Duplicate() as StyleBoxFlat;
+			var flatSelNew = flatSel.Duplicate() as StyleBoxFlat;
+			node.AddThemeStyleboxOverride("titlebar", flatNew);
+			node.AddThemeStyleboxOverride("titlebar_selected", flatSelNew);
+			var tween = node.CreateTween().SetLoops(5);
+			flatNew.BgColor = red;
+			flatSelNew.BgColor = red;
+			tween.TweenCallback(Callable.From(() => {
+				flatNew.BgColor = color;
+				flatSelNew.BgColor = colorSel;
+			})).SetDelay(1);
+			tween.TweenCallback(Callable.From(() => {
+				flatNew.BgColor = red;
+				flatSelNew.BgColor = red;
+			})).SetDelay(1);
+			tween.Finished += () => {
+				node.RemoveThemeStyleboxOverride("titlebar");
+				node.RemoveThemeStyleboxOverride("titlebar_selected");
+				tween.Kill();
+			};
+		}
+	}
+
+	public static void ShowErrorOnPort(GraphNode node, int port, bool left = false) {
+		var slotColor = node.GetSlotColorRight(port);
+		var red = new Color(1, 0, 0);
+		var tween = node.CreateTween().SetLoops(5);
+		
+		if(left) node.SetSlotColorLeft(port, red);
+		else node.SetSlotColorRight(port, red);
+		tween.TweenCallback(Callable.From(() => {
+			if(left) node.SetSlotColorLeft(port, slotColor);
+			else node.SetSlotColorRight(port, slotColor);
+		})).SetDelay(1);
+		tween.TweenCallback(Callable.From(() => {
+			if(left) node.SetSlotColorLeft(port, red);
+			else node.SetSlotColorRight(port, red);
+		})).SetDelay(1);
+		tween.Finished += () => {
+			if(left) node.SetSlotColorLeft(port, slotColor);
+			else node.SetSlotColorRight(port, slotColor);
+			tween.Kill();
+		};
+	}
+
+	public static int[] QbitOrder(int QBitCount, Array<int> ForQBits){
+		int[] _out = new int[QBitCount];
+		for(int i = 0; i < ForQBits.Count; ++i) {
+			_out[QBitCount - i - 1] = ForQBits[i];
+		}
+		var idx = ForQBits.Count;
+		for(int i = 0; i < QBitCount; ++i){
+			if(!_out.Contains(i)) {
+				_out[QBitCount - idx - 1] = i;
+				++idx;
+			}
+		}
 		return _out;
 	}
 
