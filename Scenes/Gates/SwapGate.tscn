@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://djnt51hut84i1"]
+
+[ext_resource type="Script" path="res://Scripts/Scenes/Nodes/SwapGate.cs" id="1_tjppi"]
+[ext_resource type="Texture2D" uid="uid://wa3qvi1i7fp3" path="res://Images/Swap.png" id="2_wpwds"]
+
+[node name="SwapGate" type="GraphNode"]
+offset_right = 107.0
+offset_bottom = 127.0
+title = "Swap Gate    "
+slot/0/left_enabled = true
+slot/0/left_type = 0
+slot/0/left_color = Color(1, 1, 1, 1)
+slot/0/left_icon = null
+slot/0/right_enabled = true
+slot/0/right_type = 0
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+slot/1/left_enabled = true
+slot/1/left_type = 0
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = true
+slot/1/right_type = 0
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
+script = ExtResource("1_tjppi")
+
+[node name="Swap" type="Sprite2D" parent="."]
+position = Vector2(55, 79)
+texture = ExtResource("2_wpwds")

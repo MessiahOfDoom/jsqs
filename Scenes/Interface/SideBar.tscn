@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://jkujowb0yw5p"]
+[gd_scene load_steps=10 format=3 uid="uid://jkujowb0yw5p"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/SideBar.cs" id="1_5ybyy"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/NodeAdderButton.cs" id="2_5pcrv"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://cxs8naqhablsn" path="res://Scenes/Gates/PauliYGate.tscn" id="6_sya1p"]
 [ext_resource type="PackedScene" uid="uid://w841mpiqmgue" path="res://Scenes/Gates/PauliZGate.tscn" id="7_htb3h"]
 [ext_resource type="PackedScene" uid="uid://cw84uakf6cnhn" path="res://Scenes/Gates/CNotGate.tscn" id="8_om8hw"]
+[ext_resource type="PackedScene" uid="uid://djnt51hut84i1" path="res://Scenes/Gates/SwapGate.tscn" id="9_23bmk"]
 
 [node name="SideBar" type="ColorRect" node_paths=PackedStringArray("QBitCountLineEdit", "QBitCountSlider")]
 custom_minimum_size = Vector2(255, 720)
@@ -124,6 +125,17 @@ layout_mode = 2
 text = "Add CNOT Gate"
 script = ExtResource("2_5pcrv")
 Gate = ExtResource("8_om8hw")
+parent = NodePath("../../..")
+
+[node name="Spacer7" type="Control" parent="TabContainer/Nodes"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+
+[node name="NodeAdderButton7" type="Button" parent="TabContainer/Nodes" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add Swap Gate"
+script = ExtResource("2_5pcrv")
+Gate = ExtResource("9_23bmk")
 parent = NodePath("../../..")
 
 [node name="Graphs" type="VBoxContainer" parent="TabContainer"]

@@ -1,8 +1,8 @@
 using Godot;
 using System;
 
-[Tool]
-public partial class SideBar : Node
+[Tool, GlobalClass]
+public partial class SideBar : Control
 {
 
     [Signal]
@@ -81,6 +81,13 @@ public partial class SideBar : Node
 
     public void CompileButtonPressed() {
         EmitSignal(SignalName.CompileAndRun);
+    }
+
+    public void UpdateSize() {
+        float height = CustomMinimumSize.Y;
+        (FindChild("Settings", recursive:true, owned: false) as VBoxContainer).CustomMinimumSize = new(255, Math.Max(689, height - 31));
+        (FindChild("Nodes", recursive:true, owned: false) as VBoxContainer).CustomMinimumSize = new(255, Math.Max(689, height - 31));
+        (FindChild("Graphs", recursive:true, owned: false) as VBoxContainer).CustomMinimumSize = new(255, Math.Max(689, height - 31));
     }
 
 }

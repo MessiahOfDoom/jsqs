@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0e3g2v68uet7"]
+
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/BargraphRow.cs" id="1_7masj"]
+
+[node name="BargraphRow" type="Control" node_paths=PackedStringArray("bits", "bar", "count")]
+custom_minimum_size = Vector2(585, 25)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 585.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7masj")
+bits = NodePath("Bits")
+bar = NodePath("Bar")
+count = NodePath("Count")
+
+[node name="Bits" type="Label" parent="."]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 0
+offset_top = 1.0
+offset_right = 110.0
+offset_bottom = 24.0
+text = "Bits"
+horizontal_alignment = 2
+
+[node name="Bar" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 6.0
+offset_right = 520.0
+offset_bottom = 21.0
+color = Color(0.745098, 0.431373, 0.964706, 1)
+
+[node name="Count" type="Label" parent="."]
+custom_minimum_size = Vector2(60, 0)
+offset_left = 525.0
+offset_top = 1.0
+offset_right = 585.0
+offset_bottom = 24.0
+text = "Count"

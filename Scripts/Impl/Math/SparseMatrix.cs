@@ -26,8 +26,10 @@ public struct SparseMatrix: IMatrix {
             if(y < 0 || y >= m|| x < 0 || x > n) throw new ArgumentException("Out of bounds");
             long key = (((long)y) << 32) | (long)x;
             dict[key] = value;
-            keysByCol[x].Add(y);
-            keysByRow[y].Add(x);
+            if(value.real != 0 || value.imag != 0) {
+                keysByCol[x].Add(y);
+                keysByRow[y].Add(x);
+            }
         }
     }
 

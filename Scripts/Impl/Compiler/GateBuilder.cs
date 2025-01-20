@@ -71,4 +71,28 @@ public partial class GateBuilder
 		_out[3,2] = 1;
 		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
 	}
+
+	public static LazyMatrix Swap() {
+		var _out = new SparseMatrix(4,4);
+		_out[0,0] = 1;
+		_out[1,2] = 1;
+		_out[2,1] = 1;
+		_out[3,3] = 1;
+		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
+	}
+
+	public static LazyMatrix Controlled(IMatrix matrix) {
+		if(matrix == null) throw new ArgumentNullException("Tried constructing a controlled Matrix without providing the matrix.");
+		if(matrix.getM() == 2 && matrix.getN() == 2) {
+			var _out = new SparseMatrix(4,4);
+			_out[0,0] = 1;
+			_out[1,1] = 1;
+			_out[2,2] = matrix[0, 0];
+			_out[2,3] = matrix[0, 1];
+			_out[3,2] = matrix[1, 0];
+			_out[3,3] = matrix[1, 1];
+			return new LazyMatrix(_out, LazyMatrixOperation.Hold);
+		}
+		throw new NotImplementedException("Controlled gates are only implemented for 2 QBits as of now.");
+	}
 }

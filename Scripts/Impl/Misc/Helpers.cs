@@ -139,4 +139,12 @@ public record Helpers {
 		return _out;
 	}
 
+	public static WeightedRandom<int> WeightedRandomFromVector(Vector v) {
+        WeightedRandom<int> _out = new();
+        for(int i = 0; i < v.length; ++i) {
+            _out.AddItem(i, v[i].Abs2());
+        } 
+        return _out;
+    }
+
 }

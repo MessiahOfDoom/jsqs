@@ -266,6 +266,18 @@ public partial class QuantumGraph : GraphEdit
 			GD.Print("Running Graph with input: " + input);
 			var output = c.RunWithInput(input);
 			GD.Print("Got output: " + output);
+
+			var mc = c.MonteCarlo(8192, 0);
+			
+			var ResultWindow = GetTree().Root.FindChild("ResultWindow", recursive:true, owned:false) as Window;
+			ResultWindow.Visible = true;
+			var graph = GetTree().Root.FindChild("MonteCarloGraph", recursive:true, owned:false) as MonteCarloGraph;
+			graph.displayGraph(mc, 8192, true, latestSlotCount);
+
+			/*
+			foreach(var key in mc.Keys) {
+				GD.Print($"{Convert.ToString(key, 2).PadLeft(2, '0')} : {mc[key]}");
+			}*/
 		} catch (Exception ex) {
 			EmitSignal(SignalName.CircuitCompileError, ex.Message);
 		}

@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://c8nj6d14g6nqt"]
+
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/MonteCarloGraph.cs" id="1_ckl6r"]
+[ext_resource type="PackedScene" uid="uid://c0e3g2v68uet7" path="res://Scenes/Interface/BargraphRow.tscn" id="2_cuj5w"]
+
+[node name="ResultWindowContents" type="TabContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 0
+
+[node name="Monte Carlo Simulation" type="Control" parent="."]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Infos and Settings" type="Control" parent="Monte Carlo Simulation"]
+layout_mode = 1
+anchor_right = 0.2
+anchor_bottom = 1.0
+
+[node name="MonteCarloGraph" type="Control" parent="Monte Carlo Simulation" node_paths=PackedStringArray("container")]
+layout_mode = 1
+anchor_left = 0.2
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ckl6r")
+BargraphRowScene = ExtResource("2_cuj5w")
+container = NodePath("ScrollContainer/VBoxContainer")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Monte Carlo Simulation/MonteCarloGraph"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Monte Carlo Simulation/MonteCarloGraph/ScrollContainer"]
+layout_mode = 2

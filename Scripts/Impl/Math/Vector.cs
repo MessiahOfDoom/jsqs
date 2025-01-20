@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public struct Vector
+public record Vector
 {
     private Complex[] values;
     public int length = 0;
