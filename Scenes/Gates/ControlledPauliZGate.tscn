@@ -1,12 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://djnt51hut84i1"]
+[gd_scene load_steps=3 format=3 uid="uid://b5h0nx5wsitw5"]
 
-[ext_resource type="Script" path="res://Scripts/Scenes/Nodes/SwapGate.cs" id="1_tjppi"]
-[ext_resource type="Texture2D" uid="uid://wa3qvi1i7fp3" path="res://Images/Swap.png" id="2_wpwds"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Nodes/ControlledPauliZGate.cs" id="1_tt1gk"]
+[ext_resource type="Texture2D" uid="uid://cn68lsx66y4pt" path="res://Images/CNot.png" id="2_glqrd"]
 
-[node name="SwapGate" type="GraphNode"]
-offset_right = 107.0
+[node name="ControlledPauliZGate" type="GraphNode"]
+offset_right = 203.0
 offset_bottom = 129.0
-title = "Swap Gate    "
+title = "Controlled Pauli Z Gate    "
 slot/0/left_enabled = true
 slot/0/left_type = 0
 slot/0/left_color = Color(1, 1, 1, 1)
@@ -25,8 +25,8 @@ slot/1/right_type = 0
 slot/1/right_color = Color(1, 1, 1, 1)
 slot/1/right_icon = null
 slot/1/draw_stylebox = true
-script = ExtResource("1_tjppi")
+script = ExtResource("1_tt1gk")
 
-[node name="Swap" type="Sprite2D" parent="."]
-position = Vector2(55, 79)
-texture = ExtResource("2_wpwds")
+[node name="CNot" type="Sprite2D" parent="."]
+position = Vector2(100, 82)
+texture = ExtResource("2_glqrd")

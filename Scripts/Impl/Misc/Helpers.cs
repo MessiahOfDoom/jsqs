@@ -127,7 +127,7 @@ public record Helpers {
 	public static int[] QbitOrder(int QBitCount, Array<int> ForQBits){
 		int[] _out = new int[QBitCount];
 		for(int i = 0; i < ForQBits.Count; ++i) {
-			_out[QBitCount - i - 1] = ForQBits[i];
+			_out[QBitCount - i - 1] = ForQBits[ForQBits.Count - i - 1];
 		}
 		var idx = ForQBits.Count;
 		for(int i = 0; i < QBitCount; ++i){

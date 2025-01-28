@@ -78,6 +78,7 @@ visible = false
 [connection signal="LoadFromJson" from="SideBar" to="FileDialog" method="OnLoadSignal"]
 [connection signal="SaveToJson" from="SideBar" to="FileDialog" method="OnSaveSignal"]
 [connection signal="SetQBitCount" from="SideBar" to="GraphEdit" method="OnSetSlotCount"]
+[connection signal="SetQBitOrderAscending" from="SideBar" to="GraphEdit" method="SetQBitOrderAscending"]
 [connection signal="CircuitCompileError" from="GraphEdit" to="AcceptDialog" method="ShowError"]
 [connection signal="connection_from_empty" from="GraphEdit" to="GraphEdit" method="OnConnectionToFromEmpty" binds= [false]]
 [connection signal="connection_request" from="GraphEdit" to="GraphEdit" method="OnConnectionRequest"]

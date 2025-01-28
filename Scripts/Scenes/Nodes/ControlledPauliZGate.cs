@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 
 [GlobalClass, Tool]
-public partial class CNotGate : GraphNode, ISaveableGate, ICompileableGate, IMultiInputGate, IColorableGate
+public partial class ControlledPauliZGate : GraphNode, ISaveableGate, ICompileableGate, IMultiInputGate, IColorableGate
 {
 
 	private int _qbits = 2;
@@ -19,7 +19,7 @@ public partial class CNotGate : GraphNode, ISaveableGate, ICompileableGate, IMul
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "CNot Gate    ";
+		Title = "Controlled Pauli Z Gate    ";
 		SetSlots();
 	}
 
@@ -38,6 +38,7 @@ public partial class CNotGate : GraphNode, ISaveableGate, ICompileableGate, IMul
 			AddChild(helper);
 		}
 		this.Size = new Vector2(0, 0); //Autosize
+		
 	}
 
     public Dictionary<string, Variant> Save()
@@ -58,10 +59,9 @@ public partial class CNotGate : GraphNode, ISaveableGate, ICompileableGate, IMul
     public LazyMatrix compile(int QBitCount, Array<int> ForQBits)
     {
         if(ForQBits.Count != 2) throw new ArgumentException("Compiling for an invalid number of QBits");
-		var matrix = GateBuilder.CNot();
+		var matrix = GateBuilder.Controlled(GateBuilder.PauliZ());
 		if(QBitCount > 2) matrix = matrix ^ GateBuilder.Identity(QBitCount - 2);
-		var _out = new LazyMatrix(matrix, LazyMatrixOperation.Shuffle, Helpers.QbitOrder(QBitCount, ForQBits));
-		return _out;
+		return new LazyMatrix(matrix, LazyMatrixOperation.Shuffle, Helpers.QbitOrder(QBitCount, ForQBits));
     }
 
     public int GetSlotCount()

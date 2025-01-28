@@ -20,7 +20,6 @@ public partial class GateBuilder
 			int n1 = i / 2;
 			int n2 = i - n1;
 			Hadamards[i] = Hadamards[n1] ^ Hadamards[n2];
-			//GD.Print(Hadamards[i].getM());
 		}
 
 	}
@@ -58,8 +57,8 @@ public partial class GateBuilder
 
 	public static LazyMatrix PauliZ() {
 		SparseMatrix _out = new(2, 2);
-		_out[1, 0] = 1;
-		_out[0, 1] = -1;
+		_out[0, 0] = 1;
+		_out[1, 1] = -1;
 		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
 	}
 

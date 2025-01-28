@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1eg1wwb5oc6e"]
+
+[ext_resource type="Script" path="res://Scripts/Scenes/Nodes/ClassicControlPZGate.cs" id="1_2mil2"]
+
+[node name="ClassicControlPZGate" type="GraphNode"]
+offset_right = 203.0
+offset_bottom = 127.0
+title = "Controlled Pauli Z Gate    "
+slot/0/left_enabled = true
+slot/0/left_type = 1
+slot/0/left_color = Color(1, 1, 1, 1)
+slot/0/left_icon = null
+slot/0/right_enabled = true
+slot/0/right_type = 1
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+slot/1/left_enabled = true
+slot/1/left_type = 1
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = true
+slot/1/right_type = 1
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
+script = ExtResource("1_2mil2")

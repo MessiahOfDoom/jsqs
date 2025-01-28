@@ -25,21 +25,30 @@ public partial class QuantumGraph : GraphEdit
 
 	private int latestSlotCount = 1;
 
+	private Color QBitColor = new(0xBE6EF5FF);
+	private Color BitColor = new(0xA5F56EFF);
+
+	private bool QBitOrderAscending = false;
+
+	private Compiler compiler;
 	public override void _Ready()
 	{
-		GD.Print(new CNotGate().compile(3, new(){2,0}));
 
 		inputGate ??= FindChild("InputGate", recursive:true, owned:false) as InputGate;
 		if(inputGate != null) {
 			nodes.Add(inputGate);
 			tree.Add(inputGate.Name, new());
+			(inputGate as IColorableGate).SetSlotColors(QBitColor, BitColor);
 		}
 
 		outputGate ??= FindChild("OutputGate", recursive:true, owned:false) as OutputGate;
 		if(outputGate != null) {
 			nodes.Add(outputGate);
 			tree.Add(outputGate.Name, new());
+			(outputGate as IColorableGate).SetSlotColors(QBitColor, BitColor);
 		}
+
+		compiler = new Compiler(NodeByName, (name, port, from) => GetConnection(name, port, from));
 	}
 	public void OnConnectionRequest(string fromNode, int fromPort, string toNode, int toPort) {
 		var conn = GetConnection(fromNode, fromPort, true);
@@ -100,6 +109,9 @@ public partial class QuantumGraph : GraphEdit
 		nodes.Add(node);
 		tree.Add(node.Name, new());
 		AddChild(node);
+		if(node is IColorableGate gate) {
+			gate.SetSlotColors(QBitColor, BitColor);
+		}
 	}
 
 	public void RemoveNode(GraphNode node) {
@@ -182,7 +194,9 @@ public partial class QuantumGraph : GraphEdit
 		foreach(var node in nodesClone) {
 			if(node == inputGate || node == outputGate)continue;
 			RemoveNode(node);
+			node.QueueFree();
 		}
+		CheckpointGate.checkpoints.Clear();
 	}
 
 	public void LoadFromJsonString(string text) {
@@ -191,6 +205,7 @@ public partial class QuantumGraph : GraphEdit
 		var parseRes = json.Parse(text);
 		if(parseRes != Error.Ok) {
 			GD.Print($"JSON Parse Error: {json.GetErrorMessage()} in '{text}' at line {json.GetErrorLine()}");
+			EmitSignal(SignalName.CircuitCompileError, $"JSON Parse Error: {json.GetErrorMessage()} in '{text}' at line {json.GetErrorLine()}");
 		}
 		var data = new Godot.Collections.Dictionary<string, Variant>((Dictionary)json.Data);
 		Array<Variant> gates = (Array<Variant>)data["gates"]; 
@@ -243,6 +258,9 @@ public partial class QuantumGraph : GraphEdit
 			if (node is IResizeableGate gate) {
 				gate.SetSlotCount(slotCount);
 			}
+			if(node is IColorableGate col) {
+				col.SetSlotColors(QBitColor, BitColor);
+			}
 		}
 		RebuildTree();
 	}
@@ -252,35 +270,35 @@ public partial class QuantumGraph : GraphEdit
 	}
 
 	public QCircuit Compile() {
-		return Compiler.compile(latestSlotCount, inputGate, NodeByName, (name, port) => GetConnection(name, port, true));
+		return compiler.compile(latestSlotCount, inputGate, QBitOrderAscending);
 	}
 
 	public void CompileAndRun() {
 		if(!inputGate.AllQBitsValid()) {
-			GD.Print("Not all QBits are valid, cannot run");
+			EmitSignal(SignalName.CircuitCompileError, "Not all QBits are valid, cannot run.");
 			return;
 		}
 		try {
 			QCircuit c = Compile();
-			Vector input = inputGate.GetInput();
+			Vector input = inputGate.GetInput(QBitOrderAscending);
 			GD.Print("Running Graph with input: " + input);
 			var output = c.RunWithInput(input);
 			GD.Print("Got output: " + output);
 
-			var mc = c.MonteCarlo(8192, 0);
+			
 			
 			var ResultWindow = GetTree().Root.FindChild("ResultWindow", recursive:true, owned:false) as Window;
 			ResultWindow.Visible = true;
-			var graph = GetTree().Root.FindChild("MonteCarloGraph", recursive:true, owned:false) as MonteCarloGraph;
-			graph.displayGraph(mc, 8192, true, latestSlotCount);
-
-			/*
-			foreach(var key in mc.Keys) {
-				GD.Print($"{Convert.ToString(key, 2).PadLeft(2, '0')} : {mc[key]}");
-			}*/
+			var resultWindowContents = GetTree().Root.FindChild("ResultWindowContents", recursive:true, owned:false) as ResultWindowContents;
+			resultWindowContents.setCircuit(c, latestSlotCount);
 		} catch (Exception ex) {
 			EmitSignal(SignalName.CircuitCompileError, ex.Message);
+			GD.PrintErr(ex);
 		}
+	}
+
+	public void SetQBitOrderAscending(bool ascending) {
+		QBitOrderAscending = ascending;
 	}
 
 }

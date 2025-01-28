@@ -3,8 +3,10 @@ using Godot.Collections;
 using System;
 
 [GlobalClass, Tool]
-public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate, ICheckpointGate
+public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate, ICheckpointGate, IColorableGate
 {
+
+	public static Dictionary<string, CheckpointGate> checkpoints = new();
 
 	private int _qbits = 1;
 	[Export]
@@ -16,21 +18,66 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
 		} 
 	}
 
+	public string CheckpointName = "";
+
+	[Export]
+	public LineEdit CheckpointNameEdit;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Checkpoint    ";
+		if(!Engine.IsEditorHint()) {
+			CheckpointNameEdit ??= FindChild("NameEdit", recursive:true, owned: false) as LineEdit;
+			SetNextFreeName();
+		}
 	}
 
-	public void SetSlots() {
-		foreach(var c in GetChildren()){
-			RemoveChild(c);
+    public override void _Notification(int what)
+    {
+        base._Notification(what);
+		if(what == NotificationPredelete && checkpoints.ContainsKey(CheckpointName)) {
+			checkpoints.Remove(CheckpointName);
 		}
+    }
+
+	public void SetNextFreeName(string name = "Checkpoint") {
+		if(name == CheckpointName) return;
+		if(checkpoints.ContainsKey(CheckpointName)) checkpoints.Remove(CheckpointName);
+		CheckpointName = GetNextFreeCheckpointName(name);
+		checkpoints.Add(CheckpointName, this);
+		Title = $"Checkpoint '{CheckpointName}'    ";
+		if(CheckpointNameEdit != null) CheckpointNameEdit.Text = CheckpointName;
+		Size = new(0,0); //Autosize
+	}
+
+	private string GetNextFreeCheckpointName(string name = "Checkpoint") {
+		int i = -1;
+		while(checkpoints.ContainsKey(name + (++i == 0 ? "" : $" ({i})")));
+		return name + (i == 0 ? "" : $" ({i})");
+	}
+
+	private static bool isCheckpointNameFree(string name) {
+		return !checkpoints.ContainsKey(name);
+	}
+
+    public void SetSlots() {
+		foreach(var c in GetChildren()){
+			if(!(c is LineEdit)) {
+				RemoveChild(c);
+				c.QueueFree();
+			}
+		}
+
 		for(int i = 0; i < QBits; ++i) {
-			var helper = new SlotHelper(true, true, 0, 0);
-			helper.CustomMinimumSize = new Vector2(0, 35);
+			var helper = new SlotHelper(i, true, true, 0, 0);
+			helper.CustomMinimumSize = new Vector2(0, i == QBits - 1 ? 0 : 35);
 			AddChild(helper);
 		}
+
+		var helper2 = new SlotHelper(QBits, false, false, 0, 0);
+		helper2.CustomMinimumSize = new Vector2(0, 0);
+		AddChild(helper2);
+
 		this.Size = new Vector2(0, 0); //Autosize
 	}
 
@@ -40,13 +87,16 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
 			{"Filename", SceneFilePath},
 			{"PosX", PositionOffset.X},
 			{"PosY", PositionOffset.Y},
-			{"Name", Name}
+			{"Name", Name},
+			{"CheckpointName", CheckpointName}
 		};
     }
 
 	public void Load(Dictionary<string, Variant> dict)
     {
-        //Nothing to do here
+        if(dict.ContainsKey("CheckpointName")) {
+			SetNextFreeName(dict["CheckpointName"].AsStringName());
+		}
     }
 
     public void SetSlotCount(int slotCount)
@@ -58,5 +108,9 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
     {
         return QBits;
     }
+
+	public void OnNewNameSubmitted(string name) {
+		SetNextFreeName(name);
+	}
 
 }

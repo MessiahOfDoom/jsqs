@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 
 [GlobalClass, Tool]
-public partial class PauliYGate : GraphNode, ISaveableGate, ICompileableGate
+public partial class PauliYGate : GraphNode, ISaveableGate, ICompileableGate, IColorableGate
 {
 
 	private int _qbits = 1;
@@ -26,9 +26,10 @@ public partial class PauliYGate : GraphNode, ISaveableGate, ICompileableGate
 	public void SetSlots() {
 		foreach(var c in GetChildren()){
 			RemoveChild(c);
+			c.QueueFree();
 		}
 		for(int i = 0; i < QBits; ++i) {
-			var helper = new SlotHelper(true, true, 0, 0);
+			var helper = new SlotHelper(i, true, true, 0, 0);
 			helper.CustomMinimumSize = new Vector2(0, 35);
 			AddChild(helper);
 		}
@@ -54,9 +55,9 @@ public partial class PauliYGate : GraphNode, ISaveableGate, ICompileableGate
     {
         if(ForQBits.Count != 1) throw new ArgumentException("Compiling for an invalid number of QBits");
 		var bit = ForQBits[0];
-		if(bit == 0) return GateBuilder.PauliY() ^ GateBuilder.Identity(QBitCount - 1);
-		else if(bit == QBitCount - 1) return GateBuilder.Identity(QBitCount - 1) ^ GateBuilder.PauliY();
-		else return GateBuilder.Identity(bit) ^ GateBuilder.PauliY() ^ GateBuilder.Identity(QBitCount - bit - 1);
+		if(bit == 0) return GateBuilder.Identity(QBitCount - 1) ^ GateBuilder.PauliY();
+		else if(bit == QBitCount - 1) return GateBuilder.PauliY() ^ GateBuilder.Identity(QBitCount - 1);
+		else return GateBuilder.Identity(QBitCount - bit - 1) ^ GateBuilder.PauliY() ^ GateBuilder.Identity(bit);
     }
 
 }

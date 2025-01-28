@@ -11,17 +11,27 @@ public partial class MonteCarloGraph : Control
 	
 	[Export]
 	public VBoxContainer container;
+
+
+	private bool showAllStates = false;
+	private Dictionary<int, int> lastStates = null;
+	private int lastRuns = -1;
+	private int lastBitCount = -1;
+
 	public override void _Ready()
     {
 		
     }
 
-    public void displayGraph(Dictionary<int, int> values, int totalRuns, bool displayZeros, int bitCount) {
+    public void displayGraph(Dictionary<int, int> values, int totalRuns, int bitCount) {
+		lastStates = values;
+		lastRuns = totalRuns;
+		lastBitCount = bitCount;
 		foreach(var c in container.GetChildren()){
 			container.RemoveChild(c);
 		}
-		if(displayZeros) {
-			for(int i = 0; i < 2 << bitCount; ++i) {
+		if(showAllStates) {
+			for(int i = 0; i < 1 << bitCount; ++i) {
 				AppendBar(i, bitCount, values.GetValueOrDefault(i, 0), totalRuns);
 			}
 		}else {
@@ -37,5 +47,10 @@ public partial class MonteCarloGraph : Control
 		container.AddChild(row);
 	}
 
-	
+	public void ToggleShowAllStates(bool showAllStates) {
+		this.showAllStates = showAllStates;
+		if(lastStates != null) {
+			displayGraph(lastStates, lastRuns, lastBitCount);
+		}
+	}
 }

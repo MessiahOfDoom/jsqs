@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 
 [Tool]
-public partial class OutputGate : GraphNode, ISaveableGate, IResizeableGate, ICheckpointGate
+public partial class OutputGate : GraphNode, ISaveableGate, IResizeableGate, ICheckpointGate, IColorableGate
 {
 
 	private int _qbits = 1;
@@ -25,9 +25,10 @@ public partial class OutputGate : GraphNode, ISaveableGate, IResizeableGate, ICh
 	public void SetSlots() {
 		foreach(var c in GetChildren()){
 			RemoveChild(c);
+			c.QueueFree();
 		}
 		for(int i = 0; i < QBits; ++i) {
-			var helper = new SlotHelper(true, false, 0, 0);
+			var helper = new SlotHelper(i, true, false, 0, 0);
 			helper.CustomMinimumSize = new Vector2(0, 35);
 			AddChild(helper);
 		}

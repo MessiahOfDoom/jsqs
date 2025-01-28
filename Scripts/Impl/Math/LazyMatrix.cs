@@ -6,7 +6,7 @@ using System.Linq;
 
 public struct LazyMatrix: IMatrix {
 
-	public static bool EnableCaching = true;
+	public bool EnableCaching = true;
 	public static int CachingMinSize = 16;
 
 	private IMatrix left, rightM;
@@ -25,6 +25,9 @@ public struct LazyMatrix: IMatrix {
 		this.rightC = default(Complex);
 		this.op = op;
 		bitOrder = new int[0];
+		if (left is ClassicControlBitMatrix || rightM is ClassicControlBitMatrix) {
+			EnableCaching = false;
+		}
 	}
 	public LazyMatrix(IMatrix left, IMatrix right, LazyMatrixOperation op) {
 		this.left = left;
@@ -32,6 +35,9 @@ public struct LazyMatrix: IMatrix {
 		this.rightC = default(Complex);
 		this.op = op;
 		bitOrder = new int[0];
+		if (left is ClassicControlBitMatrix || rightM is ClassicControlBitMatrix) {
+			EnableCaching = false;
+		}
 	}
 
 	public LazyMatrix(IMatrix left, Complex right, LazyMatrixOperation op) {
@@ -40,14 +46,20 @@ public struct LazyMatrix: IMatrix {
 		this.rightC = right;
 		this.op = op;
 		bitOrder = new int[0];
+		if (left is ClassicControlBitMatrix || rightM is ClassicControlBitMatrix) {
+			EnableCaching = false;
+		}
 	}
 
 	public LazyMatrix(IMatrix left, LazyMatrixOperation op, int[] bitOrder) {
 		this.left = left;
 		this.rightM = left;
-		this.rightC = default(Complex);
+		this.rightC = default;
 		this.op = op;
 		this.bitOrder = bitOrder;
+		if (left is ClassicControlBitMatrix || rightM is ClassicControlBitMatrix) {
+			EnableCaching = false;
+		}
 	}
 
 	public Complex this[int y, int x] {

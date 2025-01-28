@@ -9,6 +9,9 @@ public partial class SideBar : Control
     public delegate void SetQBitCountEventHandler(int count);
 
     [Signal]
+    public delegate void SetQBitOrderAscendingEventHandler(bool ascending);
+
+    [Signal]
     public delegate void AddNodeEventHandler(PackedScene scene);
 
     [Signal]
@@ -25,6 +28,12 @@ public partial class SideBar : Control
 
     [Export]
     public HSlider QBitCountSlider;
+
+    [Export]
+    public LineEdit QBitOrderLineEdit;
+
+    [Export]
+    public HSlider QBitOrderSlider;
 
     private int _maxQBits = 12; 
 
@@ -54,6 +63,17 @@ public partial class SideBar : Control
             QBitCountLineEdit.Text = val.ToString();
         }
         EmitSignal(SignalName.SetQBitCount, val);
+    }
+
+    public void OnQbitOrderSliderChanged(float value) {
+        var val = Mathf.Floor(value);
+        if(val <= 0 || val > 2) {
+            throw new ArgumentOutOfRangeException($"The value of the QBit Order slider is out of its expected range.");
+        }
+        if(QBitOrderLineEdit != null) {
+            QBitOrderLineEdit.Text = val == 1 ? "Descending" : "Ascending";
+        }
+        EmitSignal(SignalName.SetQBitOrderAscending, val == 2);
     }
 
     public void OnQbitCountChangedExternal(int val) {

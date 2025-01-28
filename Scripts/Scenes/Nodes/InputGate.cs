@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 
 [GlobalClass, Tool]
-public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
+public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate, IColorableGate
 {
 
 	private int _qbits = 0;
@@ -34,6 +34,7 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
 	public void SetSlots(Dictionary<int, double[]> values) {
 		foreach(var c in GetChildren()){
 			RemoveChild(c);
+			c.QueueFree();
 		}
 		ComplexInputSlotScene ??= GD.Load<PackedScene>(ProjectSettings.GlobalizePath("res://Scenes/Misc/ComplexInputSlot.tscn"));
 		for(int i = 0; i < QBits; ++i) {
@@ -124,10 +125,10 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate
 		return _out;
 	}
 
-	public Vector GetInput() {
+	public Vector GetInput(bool QBitOrderSwapped) {
 		var _out = GetQBit(0);
 		for(int i = 1; i < QBits; ++i) {
-			_out = _out ^ GetQBit(i);
+			_out = QBitOrderSwapped ? GetQBit(i) ^ _out : _out ^ GetQBit(i);
 		}
 		return _out;
 	}

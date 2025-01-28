@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 
 [GlobalClass, Tool]
-public partial class SwapGate : GraphNode, ISaveableGate, ICompileableGate, IMultiInputGate
+public partial class SwapGate : GraphNode, ISaveableGate, ICompileableGate, IMultiInputGate, IColorableGate
 {
 
 	private int _qbits = 2;
@@ -26,11 +26,14 @@ public partial class SwapGate : GraphNode, ISaveableGate, ICompileableGate, IMul
 	public void SetSlots() {
 		Sprite2D texture = null;
 		foreach(var c in GetChildren()){
-			if(!(c is Sprite2D))RemoveChild(c);
+			if(!(c is Sprite2D)) {
+				RemoveChild(c);
+				c.QueueFree();
+			}
 			else texture = c as Sprite2D;
 		}
 		for(int i = 0; i < QBits; ++i) {
-			var helper = new SlotHelper(true, true, 0, 0);
+			var helper = new SlotHelper(i, true, true, 0, 0);
 			helper.CustomMinimumSize = new Vector2(0, 35);
 			AddChild(helper);
 		}
@@ -55,7 +58,6 @@ public partial class SwapGate : GraphNode, ISaveableGate, ICompileableGate, IMul
 
     public LazyMatrix compile(int QBitCount, Array<int> ForQBits)
     {
-		GD.Print(ForQBits);
         if(ForQBits.Count != 2) throw new ArgumentException("Compiling for an invalid number of QBits");
 		var matrix = GateBuilder.Swap();
 		if(QBitCount > 2) matrix = matrix ^ GateBuilder.Identity(QBitCount - 2);

@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 
 public record QCircuit {
     public List<QCircuitPart> parts = new();
@@ -10,17 +11,30 @@ public record QCircuit {
 
     public List<int> measurementChepoints = new();
 
+    public Godot.Collections.Dictionary<MeasurementGate, int> measurementGatesToBits = new();
+    public int[] bits;
+
     public Vector RunWithInput(Vector input) {
         var output = input;
         for(int i = 0; i < parts.Count; ++i) {
             inputs.Add(output);
             if(parts[i].measurements.Count > 0) measurementChepoints.Add(i);
-            output = parts[i].RunWithInput(output);
+            output = parts[i].RunWithInput(output, this);
         }
         inputs.Add(output);
         return output;
     }
-
+/*
+    public Vector CalculateProbabilities(Vector input) {
+        var output = input;
+        for(int i= 0; i < parts.Count; ++i) {
+            inputs.Add(output);
+            output = parts[i].CalculateProbabilities(output);
+        }
+        inputs.Add(output);
+        return output;
+    }
+*/
     public System.Collections.Generic.Dictionary<int, int> MonteCarlo(int runs, int fromCheckpoint) {
         GD.Randomize();
         
@@ -44,7 +58,7 @@ public record QCircuit {
             for(int i = 0; i < runs; ++i) {
                 var output = input;
                 for(int j = actualFrom; j < parts.Count; ++j){
-                    output = parts[j].RunWithInput(output);
+                    output = parts[j].RunWithInput(output, this);
                 }
                 var res = Helpers.WeightedRandomFromVector(output).Draw();
                 _out[res] = _out.ContainsKey(res) ? ++_out[res] : 1;
@@ -53,19 +67,90 @@ public record QCircuit {
 
         return _out;
     }
+
+    public int GetMatrixIndexByBits(int[] b) {
+        var res = 0;
+        for(int i = 0; i < b.Length; ++i) {
+            res |= bits[b[i]] << i;
+        }
+        return res;
+    }
 }
 
 public record QCircuitPart {
     public LazyMatrix compiledMatrix;
     public Array<int> measurements = new();
 
+    public Array<MeasurementGate> measurementGates = new();
+
     public QCircuitPart(int QBitCount) {
         compiledMatrix = GateBuilder.Identity(QBitCount);        
     }
 
-    public Vector RunWithInput(Vector input) {
-        //TODO Measurements
-        GD.Print(compiledMatrix);
+    public Vector RunWithInput(Vector input, QCircuit c) {
+        var measuredInput = input;
+        for(int i = 0; i < measurements.Count; ++i) {
+            measuredInput = WithRandomMeasurement(measuredInput, measurements[i], measurementGates[i], c);
+        }
+        return compiledMatrix * measuredInput;
+    }
+/*    public Vector CalculateProbabilities(Vector input) {
         return compiledMatrix * input;
     }
+
+
+    public Vector CalculateProbabilitiesRecursive(Vector input, int measurementIdx) {
+        if(measurements.Count == 0) return input;
+        if(measurementIdx == measurements.Count) return input;
+        var with0 = CalculateProbabilitiesRecursive(WithMeasurement(input, measurements[measurementIdx], 0), measurementIdx +1);
+        var with1 = CalculateProbabilitiesRecursive(WithMeasurement(input, measurements[measurementIdx], 1), measurementIdx +1);
+        return with0 + with1;
+    }
+
+    private Vector WithMeasurement(Vector input, int QBit, int measurement) {
+        double mult = 1 / Math.Sqrt(MeasurementChance(input, QBit, measurement));
+        GD.Print(input);
+        GD.Print(mult);
+        var res = new Vector(input.length);
+        for(int i = 0; i < input.length; ++i) {
+            if((((i & (1 << QBit)) >> QBit) ^ measurement) == 0) {
+                res[i] = input[i] * mult;
+            }
+        }
+        return res;
+    }*/
+
+    private Vector WithRandomMeasurement(Vector input, int QBit, MeasurementGate gate, QCircuit c) {
+        double chance0 = MeasurementChance(input, QBit, 0);
+        double chance1 = 1 - chance0;
+        var rand = new WeightedRandom<int>();
+        rand.AddItem(0, chance0);
+        rand.AddItem(1, chance1);
+        var choice = rand.Draw();
+        gate.SetMeasurement(choice);
+        if(c.measurementGatesToBits.ContainsKey(gate)) {
+            c.bits[c.measurementGatesToBits[gate]] = choice;
+        }
+        double mult = 1 / Math.Sqrt(choice == 0 ? chance0 : chance1);
+        
+        var res = new Vector(input.length);
+        for(int i = 0; i < input.length; ++i) {
+            if((((i & (1 << QBit)) >> QBit) ^ choice) == 0) {
+                res[i] = input[i] * mult;
+            }
+        }
+        return res;
+    }
+
+    private double MeasurementChance(Vector input, int QBit, int measurement) {
+        double res = 0;
+        for(int i = 0; i < input.length; ++i) {
+            if((((i & (1 << QBit)) >> QBit) ^ measurement) == 0) {
+                res += input[i].Abs2();
+            }
+        }
+        return res;
+    }
+
+    
 }

@@ -21,6 +21,14 @@ public record Vector
         length = size;
     }
 
+    public Vector(Vector toClone) {
+        values = new Complex[toClone.length];
+        length = toClone.length;
+        for(int i = 0; i < length; ++i) {
+            values[i] = toClone[i].Clone();
+        }
+    }
+
     public Complex this[int index] {
         get => values[index];
         set => values[index] = value;

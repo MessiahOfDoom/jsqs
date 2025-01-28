@@ -1,5 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://c8nj6d14g6nqt"]
+[gd_scene load_steps=4 format=3 uid="uid://c8nj6d14g6nqt"]
 
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/ResultWindowContents.cs" id="1_3fkme"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/MonteCarloGraph.cs" id="1_ckl6r"]
 [ext_resource type="PackedScene" uid="uid://c0e3g2v68uet7" path="res://Scenes/Interface/BargraphRow.tscn" id="2_cuj5w"]
 
@@ -10,6 +11,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 current_tab = 0
+script = ExtResource("1_3fkme")
 
 [node name="Monte Carlo Simulation" type="Control" parent="."]
 layout_mode = 2
@@ -19,6 +21,22 @@ metadata/_tab_index = 0
 layout_mode = 1
 anchor_right = 0.2
 anchor_bottom = 1.0
+
+[node name="CheckboxMonteCarloAllStates" type="CheckBox" parent="Monte Carlo Simulation/Infos and Settings"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 160.0
+offset_bottom = 47.0
+text = "Show all states"
+
+[node name="Button" type="Button" parent="Monte Carlo Simulation/Infos and Settings"]
+layout_mode = 0
+offset_left = 21.0
+offset_top = 54.0
+offset_right = 163.0
+offset_bottom = 85.0
+text = "Rerun Simulation"
 
 [node name="MonteCarloGraph" type="Control" parent="Monte Carlo Simulation" node_paths=PackedStringArray("container")]
 layout_mode = 1
@@ -41,3 +59,6 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Monte Carlo Simulation/MonteCarloGraph/ScrollContainer"]
 layout_mode = 2
+
+[connection signal="toggled" from="Monte Carlo Simulation/Infos and Settings/CheckboxMonteCarloAllStates" to="Monte Carlo Simulation/MonteCarloGraph" method="ToggleShowAllStates"]
+[connection signal="pressed" from="Monte Carlo Simulation/Infos and Settings/Button" to="." method="rerunMonteCarlo"]
