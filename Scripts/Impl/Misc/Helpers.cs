@@ -141,8 +141,18 @@ public record Helpers {
 
 	public static WeightedRandom<int> WeightedRandomFromVector(Vector v) {
         WeightedRandom<int> _out = new();
+		if(v == null) return _out;
         for(int i = 0; i < v.length; ++i) {
             _out.AddItem(i, v[i].Abs2());
+        } 
+        return _out;
+    }
+
+	public static WeightedRandom<int> WeightedRandomFromProbabilityVector(Vector v) {
+        WeightedRandom<int> _out = new();
+		if(v == null) return _out;
+        for(int i = 0; i < v.length; ++i) {
+            _out.AddItem(i, v[i].Abs());
         } 
         return _out;
     }

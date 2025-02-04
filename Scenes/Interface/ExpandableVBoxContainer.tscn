@@ -4,12 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://fr4fr0d72bkh" path="res://Images/ButtonExpand.png" id="2_85q5s"]
 [ext_resource type="Texture2D" uid="uid://xf7gg4styyc6" path="res://Images/ButtonExpanded.png" id="3_hd4i8"]
 
-[node name="ExpandableVBoxContainer" type="VBoxContainer" node_paths=PackedStringArray("container", "btn", "titleLabel")]
+[node name="ExpandableVBoxContainer" type="VBoxContainer" node_paths=PackedStringArray("btn", "titleLabel")]
 custom_minimum_size = Vector2(255, 0)
 offset_right = 255.0
 offset_bottom = 24.0
 script = ExtResource("1_aiwq4")
-container = NodePath("")
 btn = NodePath("TextureButton")
 expand = ExtResource("2_85q5s")
 expanded = ExtResource("3_hd4i8")

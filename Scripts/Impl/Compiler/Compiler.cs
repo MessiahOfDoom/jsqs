@@ -8,17 +8,20 @@ public class Compiler {
     public delegate Dictionary ConnectionGetter(StringName name, int port, bool from);
     public delegate GraphNode NodeGetter(StringName name);
 
+
     private NodeGetter nodeGetter; 
     private ConnectionGetter connectionGetter;
+    private QCircuit.InputGetter inputGetter;
 
     private QCircuit c;
 
     private Godot.Collections.Dictionary<Dictionary, int> classicalMapping = new();
     private int currentClassicBitIdx = -1;
 
-    public Compiler(NodeGetter nodeGetter, ConnectionGetter connectionGetter) {
+    public Compiler(NodeGetter nodeGetter, ConnectionGetter connectionGetter, QCircuit.InputGetter inputGetter) {
         this.nodeGetter = nodeGetter;
         this.connectionGetter = connectionGetter;
+        this.inputGetter = inputGetter;
         Reset();
     }
 
@@ -31,18 +34,21 @@ public class Compiler {
     public QCircuit compile(int QBitCount, InputGate nodeIn, bool QBitOrderSwapped) {
         Reset();
         c = new QCircuit();
+        c.inputGetter = inputGetter;
         GraphNode checkpoint = nodeIn;
         var runningSlots = new int[QBitCount];
         for(int i = 0; i < QBitCount; ++i) {
             runningSlots[i] = i;
         } 
+        var partIdx = 0;
         while(!(checkpoint is OutputGate)) {
+            if(checkpoint is CheckpointGate cgate) c.CheckpointNameToPartIndex.Add(cgate.CheckpointName, ++partIdx);
             c.parts.Add(CompileFromCheckpointToNext(QBitCount, ref checkpoint, ref runningSlots, QBitOrderSwapped));
         }
         foreach(var connection in classicalMapping.Keys) {
             var node = nodeGetter(connection["from_node"].AsStringName());
             if(node != null && node is MeasurementGate gate) {
-                c.measurementGatesToBits.Add(gate, classicalMapping[connection]);
+                c.measurementGatesToBits.Add(gate.Name, classicalMapping[connection]);
             }
         }
         c.bits = new int[c.measurementGatesToBits.Keys.Count];
@@ -104,11 +110,14 @@ public class Compiler {
                             throw new Exception("This circuit is not compilable: Measurements can only occur directly after a checkpoint.");
                         } 
                         var classicConnection = connectionGetter(nextNode.Name, 1, true);
-                        if(classicConnection != null) {
-                            classicalMapping.Add(classicConnection, ++currentClassicBitIdx);
+                        var runningClassicIndex = ++currentClassicBitIdx;
+                        while(classicConnection != null) {
+                            classicalMapping.Add(classicConnection, runningClassicIndex);
+                            StringName nextClassicNode = classicConnection["to_node"].AsStringName();
+                            classicConnection = connectionGetter(nextClassicNode, classicConnection["to_port"].AsInt32(), true);
                         }
-                        part.measurements.Add(i);
-                        part.measurementGates.Add(mGate);
+                        part.measurements.Add(ActualIndex(i, QBitCount, QBitOrderSwapped));
+                        part.measurementGates.Add(mGate.Name);
                     }
                     if(runningNodes[i] is ICompileableGate gate) {
                         part.compiledMatrix = gate.compile(QBitCount, new Array<int> {ActualIndex(i, QBitCount, QBitOrderSwapped)}) * part.compiledMatrix;
@@ -120,12 +129,6 @@ public class Compiler {
                                 var conn = connectionGetter(runningNodes[i].Name, x, false);
                                 if(classicalMapping.ContainsKey(conn)) {
                                     bits.Add(classicalMapping[conn]);
-                                    if(runningNodes[i].GetOutputPortCount() > x) {
-                                        var conn2 = connectionGetter(runningNodes[i].Name, x, true);
-                                        if(conn2 != null) {
-                                            classicalMapping.Add(conn2, classicalMapping[conn]);
-                                        }
-                                    }
                                 }else {
                                     Helpers.ShowErrorOnPort(runningNodes[i], x, true);
                                     throw new Exception("This circuit is not compilable: Some gates require a classical bit as input but no measured bit reaches them.");

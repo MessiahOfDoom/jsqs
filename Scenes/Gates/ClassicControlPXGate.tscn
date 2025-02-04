@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://Scripts/Scenes/Nodes/ClassicControlPXGate.cs" id="1_dhocn"]
 
 [node name="ClassicControlPXGate" type="GraphNode"]
-offset_right = 118.0
+offset_right = 203.0
 offset_bottom = 127.0
-title = "Pauli X Gate    "
+title = "Controlled Pauli X Gate    "
 slot/0/left_enabled = true
 slot/0/left_type = 1
 slot/0/left_color = Color(1, 1, 1, 1)

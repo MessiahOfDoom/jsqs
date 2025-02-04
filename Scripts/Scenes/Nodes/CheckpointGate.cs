@@ -23,28 +23,39 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
 	[Export]
 	public LineEdit CheckpointNameEdit;
 
+	public bool shouldRemove = true;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		if(!Engine.IsEditorHint()) {
 			CheckpointNameEdit ??= FindChild("NameEdit", recursive:true, owned: false) as LineEdit;
 			SetNextFreeName();
+			if(GetParent() is QuantumGraphPreview) {
+				CheckpointNameEdit.Editable = false;
+				shouldRemove = false;
+			}
 		}
 	}
 
     public override void _Notification(int what)
     {
         base._Notification(what);
-		if(what == NotificationPredelete && checkpoints.ContainsKey(CheckpointName)) {
+		if(shouldRemove && what == NotificationPredelete && checkpoints.ContainsKey(CheckpointName)) {
 			checkpoints.Remove(CheckpointName);
 		}
     }
 
 	public void SetNextFreeName(string name = "Checkpoint") {
 		if(name == CheckpointName) return;
-		if(checkpoints.ContainsKey(CheckpointName)) checkpoints.Remove(CheckpointName);
-		CheckpointName = GetNextFreeCheckpointName(name);
-		checkpoints.Add(CheckpointName, this);
+		if(GetParent() is QuantumGraphPreview) {
+			CheckpointName = name;
+		}
+		else {
+			if(checkpoints.ContainsKey(CheckpointName)) checkpoints.Remove(CheckpointName);
+			CheckpointName = GetNextFreeCheckpointName(name);
+			checkpoints.Add(CheckpointName, this);
+		}
 		Title = $"Checkpoint '{CheckpointName}'    ";
 		if(CheckpointNameEdit != null) CheckpointNameEdit.Text = CheckpointName;
 		Size = new(0,0); //Autosize
@@ -52,11 +63,13 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
 
 	private string GetNextFreeCheckpointName(string name = "Checkpoint") {
 		int i = -1;
-		while(checkpoints.ContainsKey(name + (++i == 0 ? "" : $" ({i})")));
+		while(!isCheckpointNameFree(name + (++i == 0 ? "" : $" ({i})")));
 		return name + (i == 0 ? "" : $" ({i})");
 	}
 
 	private static bool isCheckpointNameFree(string name) {
+		GD.Print(!checkpoints.ContainsKey(name) + "   " + name);
+		GD.Print(checkpoints);
 		return !checkpoints.ContainsKey(name);
 	}
 
@@ -97,6 +110,7 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
         if(dict.ContainsKey("CheckpointName")) {
 			SetNextFreeName(dict["CheckpointName"].AsStringName());
 		}
+		GD.Print(checkpoints);
     }
 
     public void SetSlotCount(int slotCount)

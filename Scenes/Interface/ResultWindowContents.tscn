@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://c8nj6d14g6nqt"]
+[gd_scene load_steps=7 format=3 uid="uid://c8nj6d14g6nqt"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/ResultWindowContents.cs" id="1_3fkme"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/MonteCarloGraph.cs" id="1_ckl6r"]
 [ext_resource type="PackedScene" uid="uid://c0e3g2v68uet7" path="res://Scenes/Interface/BargraphRow.tscn" id="2_cuj5w"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/QuantumGraphPreview.cs" id="4_njamb"]
+[ext_resource type="PackedScene" uid="uid://bjf7efc0k0dwc" path="res://Scenes/Gates/InputGate.tscn" id="5_ym0gs"]
+[ext_resource type="PackedScene" uid="uid://dgy0am3ijg5dd" path="res://Scenes/Gates/OutputGate.tscn" id="6_uou8a"]
 
 [node name="ResultWindowContents" type="TabContainer"]
 anchors_preset = 15
@@ -10,10 +13,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-current_tab = 0
+current_tab = 1
 script = ExtResource("1_3fkme")
 
 [node name="Monte Carlo Simulation" type="Control" parent="."]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -60,5 +64,89 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="Monte Carlo Simulation/MonteCarloGraph/ScrollContainer"]
 layout_mode = 2
 
+[node name="Analysis" type="Control" parent="."]
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Infos and Settings" type="Control" parent="Analysis"]
+layout_mode = 2
+anchors_preset = 0
+offset_right = 255.0
+offset_bottom = 689.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Analysis/Infos and Settings"]
+layout_mode = 0
+offset_right = 255.0
+offset_bottom = 40.0
+
+[node name="Spacer" type="Control" parent="Analysis/Infos and Settings/VBoxContainer"]
+layout_mode = 2
+
+[node name="RerunAllButton" type="Button" parent="Analysis/Infos and Settings/VBoxContainer"]
+custom_minimum_size = Vector2(255, 0)
+layout_mode = 2
+text = "Rerun entire circuit"
+
+[node name="Spacer2" type="Control" parent="Analysis/Infos and Settings/VBoxContainer"]
+layout_mode = 2
+
+[node name="RerunFromButton" type="Button" parent="Analysis/Infos and Settings/VBoxContainer"]
+custom_minimum_size = Vector2(255, 0)
+layout_mode = 2
+text = "Rerun from checkpoint"
+
+[node name="Spacer3" type="Control" parent="Analysis/Infos and Settings/VBoxContainer"]
+layout_mode = 2
+
+[node name="CheckpointDropdown" type="OptionButton" parent="Analysis/Infos and Settings/VBoxContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="Analysis"]
+anchors_preset = 0
+offset_left = 255.0
+offset_right = 1279.0
+offset_bottom = 689.0
+
+[node name="QuantumGraphPreview" type="GraphEdit" parent="Analysis/Control" node_paths=PackedStringArray("inputGate", "outputGate")]
+custom_minimum_size = Vector2(1024, 689)
+layout_mode = 0
+offset_right = 1024.0
+offset_bottom = 689.0
+script = ExtResource("4_njamb")
+inputGate = NodePath("InputGate")
+outputGate = NodePath("OutputGate")
+
+[node name="InputGate" parent="Analysis/Control/QuantumGraphPreview" instance=ExtResource("5_ym0gs")]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 200.0
+offset_right = 471.0
+offset_bottom = 325.0
+mouse_filter = 1
+position_offset = Vector2(200, 200)
+slot/0/left_enabled = false
+slot/0/left_type = 0
+slot/0/left_color = Color(0, 0, 0, 0)
+slot/0/left_icon = null
+slot/0/right_enabled = true
+slot/0/right_type = 0
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+QBits = 1
+
+[node name="OutputGate" parent="Analysis/Control/QuantumGraphPreview" instance=ExtResource("6_uou8a")]
+layout_mode = 2
+offset_left = 600.0
+offset_top = 200.0
+offset_right = 681.0
+offset_bottom = 290.0
+mouse_filter = 1
+position_offset = Vector2(600, 200)
+title = "Output    "
+
 [connection signal="toggled" from="Monte Carlo Simulation/Infos and Settings/CheckboxMonteCarloAllStates" to="Monte Carlo Simulation/MonteCarloGraph" method="ToggleShowAllStates"]
 [connection signal="pressed" from="Monte Carlo Simulation/Infos and Settings/Button" to="." method="rerunMonteCarlo"]
+[connection signal="pressed" from="Analysis/Infos and Settings/VBoxContainer/RerunAllButton" to="." method="rerunAnalysisWindow"]
+[connection signal="pressed" from="Analysis/Infos and Settings/VBoxContainer/RerunFromButton" to="." method="rerunAnalysisWindowFromCheckpoint"]
+[connection signal="SetQbitsFromInputGate" from="Analysis/Control/QuantumGraphPreview/InputGate" to="Analysis/Control/QuantumGraphPreview" method="OnSetSlotCount"]

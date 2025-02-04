@@ -48,7 +48,7 @@ public partial class QuantumGraph : GraphEdit
 			(outputGate as IColorableGate).SetSlotColors(QBitColor, BitColor);
 		}
 
-		compiler = new Compiler(NodeByName, (name, port, from) => GetConnection(name, port, from));
+		compiler = new Compiler(NodeByName, (name, port, from) => GetConnection(name, port, from), GetInputOrThrow);
 	}
 	public void OnConnectionRequest(string fromNode, int fromPort, string toNode, int toPort) {
 		var conn = GetConnection(fromNode, fromPort, true);
@@ -194,6 +194,7 @@ public partial class QuantumGraph : GraphEdit
 		foreach(var node in nodesClone) {
 			if(node == inputGate || node == outputGate)continue;
 			RemoveNode(node);
+			if(node is CheckpointGate cg) cg.shouldRemove = false;
 			node.QueueFree();
 		}
 		CheckpointGate.checkpoints.Clear();
@@ -204,7 +205,7 @@ public partial class QuantumGraph : GraphEdit
 		var json = new Json();
 		var parseRes = json.Parse(text);
 		if(parseRes != Error.Ok) {
-			GD.Print($"JSON Parse Error: {json.GetErrorMessage()} in '{text}' at line {json.GetErrorLine()}");
+			GD.PrintErr($"JSON Parse Error: {json.GetErrorMessage()} in '{text}' at line {json.GetErrorLine()}");
 			EmitSignal(SignalName.CircuitCompileError, $"JSON Parse Error: {json.GetErrorMessage()} in '{text}' at line {json.GetErrorLine()}");
 		}
 		var data = new Godot.Collections.Dictionary<string, Variant>((Dictionary)json.Data);
@@ -273,6 +274,14 @@ public partial class QuantumGraph : GraphEdit
 		return compiler.compile(latestSlotCount, inputGate, QBitOrderAscending);
 	}
 
+	public Vector GetInputOrThrow() {
+		if(!inputGate.AllQBitsValid()) {
+			EmitSignal(SignalName.CircuitCompileError, "Not all QBits are valid, cannot run.");
+			throw new Exception();
+		}
+		return inputGate.GetInput(QBitOrderAscending);
+	}
+
 	public void CompileAndRun() {
 		if(!inputGate.AllQBitsValid()) {
 			EmitSignal(SignalName.CircuitCompileError, "Not all QBits are valid, cannot run.");
@@ -282,15 +291,15 @@ public partial class QuantumGraph : GraphEdit
 			QCircuit c = Compile();
 			Vector input = inputGate.GetInput(QBitOrderAscending);
 			GD.Print("Running Graph with input: " + input);
-			var output = c.RunWithInput(input);
+			var output = c.Run();
 			GD.Print("Got output: " + output);
 
-			
+			GD.Print("Probabilities: " + c.CalculateProbabilityVector(input));
 			
 			var ResultWindow = GetTree().Root.FindChild("ResultWindow", recursive:true, owned:false) as Window;
 			ResultWindow.Visible = true;
 			var resultWindowContents = GetTree().Root.FindChild("ResultWindowContents", recursive:true, owned:false) as ResultWindowContents;
-			resultWindowContents.setCircuit(c, latestSlotCount);
+			resultWindowContents.setCircuit(c, latestSlotCount, AsJsonString());
 		} catch (Exception ex) {
 			EmitSignal(SignalName.CircuitCompileError, ex.Message);
 			GD.PrintErr(ex);
