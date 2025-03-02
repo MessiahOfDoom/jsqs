@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 
 [GlobalClass, Tool]
-public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGate, IColorableGate
+public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGate, IColorableGate, IMultiInputGate
 {
 
 	private int _qbits = 1;
@@ -18,11 +18,12 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
 	}
 
 	private string AsBase64String = "";
+	private string gateName = "";
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		Title = "Precompiled Gate    ";
+		Title = $"Precompiled Gate '{gateName}'    ";
 		SetSlots();
 	}
 
@@ -46,28 +47,35 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
 			{"PosX", PositionOffset.X},
 			{"PosY", PositionOffset.Y},
 			{"Name", Name},
-			{"Base64", AsBase64String}
+			{"Base64", AsBase64String},
+			{"GateName", gateName}
 		};
     }
 
     public void Load(Dictionary<string, Variant> dict)
     {
         AsBase64String = dict["Base64"].AsString();
+		var mat = LazyMatrix.FromByteArray(Convert.FromBase64String(AsBase64String));
+		var N = mat.getN();
+		var M = mat.getM();
+		if(M != N) throw new Exception("Matrix isn't square, couldn't build a Gate out of it.");
+		QBits = (int)Math.Ceiling(Math.Log2(N));
+		if((1 << QBits) != N) throw new Exception("Matrix dimensions aren't a multiple of 2, couldn't build a Gate out of it.");
+		gateName = dict["GateName"].AsString();
     }
 
     public LazyMatrix compile(int QBitCount, Array<int> ForQBits)
     {
-        if(ForQBits.Count != 1) throw new ArgumentException("Compiling for an invalid number of QBits");
-		var bit = ForQBits[0];
-		if(bit == 0) return GateBuilder.Identity(QBitCount - 1) ^ GateBuilder.PauliX();
-		else if(bit == QBitCount - 1) return GateBuilder.PauliX() ^ GateBuilder.Identity(QBitCount - 1);
-		else return GateBuilder.Identity(QBitCount - bit - 1) ^ GateBuilder.PauliX() ^ GateBuilder.Identity(bit);
+        if(ForQBits.Count != QBits) throw new ArgumentException("Compiling for an invalid number of QBits");
+		var matrix = LazyMatrix.FromByteArray(Convert.FromBase64String(AsBase64String));
+		if(QBitCount > QBits) matrix = matrix ^ GateBuilder.Identity(QBitCount - QBits);
+		return new LazyMatrix(matrix, LazyMatrixOperation.Shuffle, Helpers.QbitOrder(QBitCount, ForQBits));
     }
 
 	public void InitializeFromFile(string filename) {
-		GD.Print(filename.Replace("\\", "/"));
-		var name = filename.Replace("\\", "/").Split("/").Last().Replace(".jqcg", "");
-		Title = $"Precompiled Gate '{name}'    ";
+		GD.Print(filename.Replace("\\", "/").Split("/").Last().Replace(".jqcg", ""));
+		gateName = filename.Replace("\\", "/").Split("/").Last().Replace(".jqcg", "");
+		Title = $"Precompiled Gate '{gateName}'    ";
 		using var file = FileAccess.Open(filename, FileAccess.ModeFlags.Read);
 		AsBase64String = file.GetAsText();
 		var mat = LazyMatrix.FromByteArray(Convert.FromBase64String(AsBase64String));
@@ -79,4 +87,8 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
 		//TODO maybe check for unitary matrix
 	}
 
+    public int GetSlotCount()
+    {
+        return QBits;
+    }
 }

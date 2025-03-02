@@ -10,7 +10,6 @@ public partial class ResultWindowContents : TabContainer
 	private bool initialized = false;
 
 	public void setCircuit(QCircuit circuit, int qbits, string GraphJson) {
-		GD.Print(GraphJson);
 		lastCompiledCircuit = circuit;
 		lastQBitCount = qbits;
 		rerunMonteCarlo();

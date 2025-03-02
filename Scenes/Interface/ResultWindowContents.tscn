@@ -19,11 +19,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_q2nu1")
-current_tab = 1
+current_tab = 0
 script = ExtResource("1_3fkme")
 
 [node name="Monte Carlo Simulation" type="Control" parent="."]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -71,6 +70,7 @@ grow_vertical = 2
 layout_mode = 2
 
 [node name="Analysis" type="TabContainer" parent="."]
+visible = false
 layout_mode = 2
 current_tab = 0
 metadata/_tab_index = 1
@@ -119,8 +119,8 @@ outputGate = NodePath("OutputGate")
 layout_mode = 0
 offset_left = -303.0
 offset_top = -167.0
-offset_right = -32.0
-offset_bottom = -43.0
+offset_right = -198.0
+offset_bottom = -113.0
 mouse_filter = 1
 position_offset = Vector2(-303, -167)
 slot/0/left_enabled = false
@@ -139,7 +139,7 @@ layout_mode = 2
 offset_left = 207.0
 offset_top = -154.0
 offset_right = 286.0
-offset_bottom = -65.0
+offset_bottom = -100.0
 mouse_filter = 1
 position_offset = Vector2(207, -154)
 title = "Output    "

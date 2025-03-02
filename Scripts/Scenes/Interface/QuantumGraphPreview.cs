@@ -104,7 +104,6 @@ public partial class QuantumGraphPreview : GraphEdit
 		foreach(var conn in connections) {
 			ConnectNode((StringName)conn["from_node"], (int)conn["from_port"], (StringName)conn["to_node"], (int)conn["to_port"]);
 		}
-		GD.Print("TEST");
 		inputGate.EmitSignal(InputGate.SignalName.SetQbitsFromInputGate, latestSlotCount);
 	}
 
