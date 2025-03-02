@@ -1,11 +1,16 @@
-[gd_scene load_steps=7 format=3 uid="uid://c8nj6d14g6nqt"]
+[gd_scene load_steps=10 format=3 uid="uid://c8nj6d14g6nqt"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/ResultWindowContents.cs" id="1_3fkme"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/MonteCarloGraph.cs" id="1_ckl6r"]
+[ext_resource type="Theme" uid="uid://crfma0mdfxqgn" path="res://Resources/GlobalTheme.theme" id="1_q2nu1"]
 [ext_resource type="PackedScene" uid="uid://c0e3g2v68uet7" path="res://Scenes/Interface/BargraphRow.tscn" id="2_cuj5w"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/QuantumGraphPreview.cs" id="4_njamb"]
 [ext_resource type="PackedScene" uid="uid://bjf7efc0k0dwc" path="res://Scenes/Gates/InputGate.tscn" id="5_ym0gs"]
 [ext_resource type="PackedScene" uid="uid://dgy0am3ijg5dd" path="res://Scenes/Gates/OutputGate.tscn" id="6_uou8a"]
+[ext_resource type="Script" path="res://Scripts/Resources/SubScriptBBCode.cs" id="7_nlln3"]
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_q10vx"]
+script = ExtResource("7_nlln3")
 
 [node name="ResultWindowContents" type="TabContainer"]
 anchors_preset = 15
@@ -13,6 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_q2nu1")
 current_tab = 1
 script = ExtResource("1_3fkme")
 
@@ -64,66 +70,59 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="Monte Carlo Simulation/MonteCarloGraph/ScrollContainer"]
 layout_mode = 2
 
-[node name="Analysis" type="Control" parent="."]
+[node name="Analysis" type="TabContainer" parent="."]
 layout_mode = 2
+current_tab = 0
 metadata/_tab_index = 1
 
-[node name="Infos and Settings" type="Control" parent="Analysis"]
+[node name="Graph" type="HBoxContainer" parent="Analysis"]
 layout_mode = 2
-anchors_preset = 0
-offset_right = 255.0
-offset_bottom = 689.0
+metadata/_tab_index = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Analysis/Infos and Settings"]
-layout_mode = 0
-offset_right = 255.0
-offset_bottom = 40.0
-
-[node name="Spacer" type="Control" parent="Analysis/Infos and Settings/VBoxContainer"]
+[node name="Infos and Settings" type="VBoxContainer" parent="Analysis/Graph"]
+custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 
-[node name="RerunAllButton" type="Button" parent="Analysis/Infos and Settings/VBoxContainer"]
+[node name="Spacer" type="Control" parent="Analysis/Graph/Infos and Settings"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="RerunAllButton" type="Button" parent="Analysis/Graph/Infos and Settings"]
 custom_minimum_size = Vector2(255, 0)
 layout_mode = 2
 text = "Rerun entire circuit"
 
-[node name="Spacer2" type="Control" parent="Analysis/Infos and Settings/VBoxContainer"]
+[node name="Spacer2" type="Control" parent="Analysis/Graph/Infos and Settings"]
+custom_minimum_size = Vector2(0, 5)
 layout_mode = 2
 
-[node name="RerunFromButton" type="Button" parent="Analysis/Infos and Settings/VBoxContainer"]
+[node name="RerunFromButton" type="Button" parent="Analysis/Graph/Infos and Settings"]
 custom_minimum_size = Vector2(255, 0)
 layout_mode = 2
 text = "Rerun from checkpoint"
 
-[node name="Spacer3" type="Control" parent="Analysis/Infos and Settings/VBoxContainer"]
+[node name="Spacer3" type="Control" parent="Analysis/Graph/Infos and Settings"]
+custom_minimum_size = Vector2(0, 5)
 layout_mode = 2
 
-[node name="CheckpointDropdown" type="OptionButton" parent="Analysis/Infos and Settings/VBoxContainer"]
+[node name="CheckpointDropdown" type="OptionButton" parent="Analysis/Graph/Infos and Settings"]
 layout_mode = 2
 
-[node name="Control" type="Control" parent="Analysis"]
-anchors_preset = 0
-offset_left = 255.0
-offset_right = 1279.0
-offset_bottom = 689.0
-
-[node name="QuantumGraphPreview" type="GraphEdit" parent="Analysis/Control" node_paths=PackedStringArray("inputGate", "outputGate")]
-custom_minimum_size = Vector2(1024, 689)
-layout_mode = 0
-offset_right = 1024.0
-offset_bottom = 689.0
+[node name="QuantumGraphPreview" type="GraphEdit" parent="Analysis/Graph" node_paths=PackedStringArray("inputGate", "outputGate")]
+layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("4_njamb")
 inputGate = NodePath("InputGate")
 outputGate = NodePath("OutputGate")
 
-[node name="InputGate" parent="Analysis/Control/QuantumGraphPreview" instance=ExtResource("5_ym0gs")]
+[node name="InputGate" parent="Analysis/Graph/QuantumGraphPreview" instance=ExtResource("5_ym0gs")]
 layout_mode = 0
-offset_left = 200.0
-offset_top = 200.0
-offset_right = 471.0
-offset_bottom = 325.0
+offset_left = -303.0
+offset_top = -167.0
+offset_right = -32.0
+offset_bottom = -43.0
 mouse_filter = 1
-position_offset = Vector2(200, 200)
+position_offset = Vector2(-303, -167)
 slot/0/left_enabled = false
 slot/0/left_type = 0
 slot/0/left_color = Color(0, 0, 0, 0)
@@ -135,18 +134,81 @@ slot/0/right_icon = null
 slot/0/draw_stylebox = true
 QBits = 1
 
-[node name="OutputGate" parent="Analysis/Control/QuantumGraphPreview" instance=ExtResource("6_uou8a")]
+[node name="OutputGate" parent="Analysis/Graph/QuantumGraphPreview" instance=ExtResource("6_uou8a")]
 layout_mode = 2
-offset_left = 600.0
-offset_top = 200.0
-offset_right = 681.0
-offset_bottom = 290.0
+offset_left = 207.0
+offset_top = -154.0
+offset_right = 286.0
+offset_bottom = -65.0
 mouse_filter = 1
-position_offset = Vector2(600, 200)
+position_offset = Vector2(207, -154)
 title = "Output    "
+
+[node name="States" type="HBoxContainer" parent="Analysis"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Analysis/States"]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="Analysis/States/VBoxContainer"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="ModeLabel" type="Label" parent="Analysis/States/VBoxContainer"]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+text = " Mode"
+vertical_alignment = 1
+
+[node name="StateModeDropdown" type="OptionButton" parent="Analysis/States/VBoxContainer"]
+layout_mode = 2
+clip_text = true
+selected = 0
+fit_to_longest_item = false
+item_count = 2
+popup/item_0/text = "State at Checkpoint"
+popup/item_1/text = "All states from Checkpoint"
+popup/item_1/id = 1
+
+[node name="Spacer2" type="Control" parent="Analysis/States/VBoxContainer"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="FromLabel" type="Label" parent="Analysis/States/VBoxContainer"]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+text = " Checkpoint"
+vertical_alignment = 1
+
+[node name="StateCheckpointDropdown" type="OptionButton" parent="Analysis/States/VBoxContainer"]
+layout_mode = 2
+clip_text = true
+fit_to_longest_item = false
+
+[node name="Spacer3" type="Control" parent="Analysis/States/VBoxContainer"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Analysis/States"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StateRichTextLabel" type="RichTextLabel" parent="Analysis/States/ScrollContainer"]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "￨1〉[sub]1[/sub]+"
+custom_effects = [SubResource("RichTextEffect_q10vx")]
 
 [connection signal="toggled" from="Monte Carlo Simulation/Infos and Settings/CheckboxMonteCarloAllStates" to="Monte Carlo Simulation/MonteCarloGraph" method="ToggleShowAllStates"]
 [connection signal="pressed" from="Monte Carlo Simulation/Infos and Settings/Button" to="." method="rerunMonteCarlo"]
-[connection signal="pressed" from="Analysis/Infos and Settings/VBoxContainer/RerunAllButton" to="." method="rerunAnalysisWindow"]
-[connection signal="pressed" from="Analysis/Infos and Settings/VBoxContainer/RerunFromButton" to="." method="rerunAnalysisWindowFromCheckpoint"]
-[connection signal="SetQbitsFromInputGate" from="Analysis/Control/QuantumGraphPreview/InputGate" to="Analysis/Control/QuantumGraphPreview" method="OnSetSlotCount"]
+[connection signal="pressed" from="Analysis/Graph/Infos and Settings/RerunAllButton" to="." method="rerunAnalysisWindow"]
+[connection signal="pressed" from="Analysis/Graph/Infos and Settings/RerunFromButton" to="." method="rerunAnalysisWindowFromCheckpoint"]
+[connection signal="SetQbitsFromInputGate" from="Analysis/Graph/QuantumGraphPreview/InputGate" to="Analysis/Graph/QuantumGraphPreview" method="OnSetSlotCount"]
+[connection signal="item_selected" from="Analysis/States/VBoxContainer/StateModeDropdown" to="." method="SelectStateMode"]
+[connection signal="item_selected" from="Analysis/States/VBoxContainer/StateCheckpointDropdown" to="." method="SelectStateCheckpoint" unbinds=1]

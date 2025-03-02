@@ -74,7 +74,9 @@ initial_position = 2
 visible = false
 
 [connection signal="AddNode" from="SideBar" to="GraphEdit" method="AddGraphNodeFromScene"]
+[connection signal="AddPrecompiledNode" from="SideBar" to="FileDialog" method="OnLoadGateSignal"]
 [connection signal="CompileAndRun" from="SideBar" to="GraphEdit" method="CompileAndRun"]
+[connection signal="CompileToGate" from="SideBar" to="FileDialog" method="OnSaveGateSignal"]
 [connection signal="LoadFromJson" from="SideBar" to="FileDialog" method="OnLoadSignal"]
 [connection signal="SaveToJson" from="SideBar" to="FileDialog" method="OnSaveSignal"]
 [connection signal="SetQBitCount" from="SideBar" to="GraphEdit" method="OnSetSlotCount"]
@@ -87,5 +89,7 @@ visible = false
 [connection signal="SetQbitsFromInputGate" from="GraphEdit/InputGate" to="SideBar" method="OnQbitCountChangedExternal"]
 [connection signal="SetQbitsFromInputGate" from="GraphEdit/InputGate" to="GraphEdit" method="OnSetSlotCount"]
 [connection signal="LoadFileSelected" from="FileDialog" to="GraphEdit" method="LoadFromJson"]
+[connection signal="LoadGateFileSelected" from="FileDialog" to="GraphEdit" method="AddPrecompiledGate"]
 [connection signal="SaveFileSelected" from="FileDialog" to="GraphEdit" method="SaveToJson"]
+[connection signal="SaveGateFileSelected" from="FileDialog" to="GraphEdit" method="CompileToGate"]
 [connection signal="file_selected" from="FileDialog" to="FileDialog" method="OnFileSelected"]

@@ -310,4 +310,32 @@ public partial class QuantumGraph : GraphEdit
 		QBitOrderAscending = ascending;
 	}
 
+	public void CompileToGate(string filename) {
+		using var Savefile = FileAccess.Open(filename, FileAccess.ModeFlags.Write);
+		Savefile.StoreString(AsBase64String());
+	}
+
+	public string AsBase64String() {
+		QCircuit c = Compile();
+		return Convert.ToBase64String(c.ToMatrix().ToByteArray());
+	}
+
+	public void AddPrecompiledGate(string filename) {
+		var scene = GD.Load<PackedScene>("res://Scenes/Gates/PrecompiledGate.tscn");
+		Node node = scene.Instantiate();
+		if (!(node is GraphNode)) throw new ArgumentException("Can't add Scene as new Node because it isn't a GraphNode");
+		node.Name = Guid.NewGuid().ToString();
+		PrecompiledGate newNode = node as PrecompiledGate;
+		Helpers.AddCloseButton(newNode, this);
+		try {
+			newNode.InitializeFromFile(filename);
+			AddGraphNode(newNode);
+		} catch (Exception ex) {
+			EmitSignal(SignalName.CircuitCompileError, ex.Message);
+			GD.PrintErr(ex);
+		}
+
+		
+	}
+
 }

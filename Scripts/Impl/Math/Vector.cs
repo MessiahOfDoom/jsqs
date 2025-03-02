@@ -142,4 +142,17 @@ public record Vector
         }
         return total;
     }
+
+    public string ToBBCode() {
+        string _out = "";
+        var len = Math.Floor(Math.Log2(values.Length));
+        for(int i = 0; i < values.Length; ++i) {
+            var str = values[i].ToBBCode(1e-8, 1e-4);
+            if(str != "") {
+                if(_out != "") _out += " + ";
+                _out += $"({str}) * ￨{i}〉[sub]{len}[/sub]"; 
+            }
+        }
+        return _out;
+    }
 }

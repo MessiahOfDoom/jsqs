@@ -68,4 +68,13 @@ public struct Complex
 		return d.Length == 0 ? new Complex() : d.Length == 1 ? new Complex(d[0]) : new Complex(d[0], d[1]);
 	}
 	public override string ToString() => $"{real} + {imag}j";
+	public string ToBBCode(double limit1, double limit2) {
+		var abs = Abs2();
+		var realAbs = Math.Abs(real);
+		var imagAbs = Math.Abs(imag);
+		var realStr = realAbs > 0 ? string.Format("{0:0.0000}", real) : "";
+		var imagStr = imagAbs > 0 ? string.Format("{0:0.0000}", imag) : "";
+		var stateStr = realAbs > 0 && imagAbs > 0 ? $"{realStr} + {imagStr}i" : realAbs > 0 ? realStr : imagAbs > 0 ? imagStr + "i" : "0";
+		return abs < limit1 ? "" : abs < limit2 ? $"μ" : stateStr;
+	}
 }

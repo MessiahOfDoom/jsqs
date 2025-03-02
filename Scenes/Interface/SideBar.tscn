@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://jkujowb0yw5p"]
+[gd_scene load_steps=16 format=3 uid="uid://jkujowb0yw5p"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/SideBar.cs" id="1_5ybyy"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/NodeAdderButton.cs" id="2_5pcrv"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://0o3ddiwa7j7c" path="res://Scenes/Gates/MeasurementGate.tscn" id="4_1a10c"]
 [ext_resource type="PackedScene" uid="uid://dt54k18v770ay" path="res://Scenes/Gates/CheckpointGate.tscn" id="4_4so86"]
 [ext_resource type="PackedScene" uid="uid://10mmdjyoql14" path="res://Scenes/Gates/PauliXGate.tscn" id="5_my5c4"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/PrecompiledNodeAdderButton.cs" id="6_she4b"]
 [ext_resource type="PackedScene" uid="uid://cxs8naqhablsn" path="res://Scenes/Gates/PauliYGate.tscn" id="6_sya1p"]
 [ext_resource type="PackedScene" uid="uid://w841mpiqmgue" path="res://Scenes/Gates/PauliZGate.tscn" id="7_htb3h"]
 [ext_resource type="PackedScene" uid="uid://cw84uakf6cnhn" path="res://Scenes/Gates/CNotGate.tscn" id="8_om8hw"]
@@ -99,7 +100,6 @@ container = NodePath("VBoxContainer")
 title = "Miscellanoues Gates"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Nodes/MiscGates"]
-visible = false
 layout_mode = 2
 
 [node name="NodeAdderButton2" type="Button" parent="TabContainer/Nodes/MiscGates/VBoxContainer" node_paths=PackedStringArray("parent")]
@@ -121,6 +121,16 @@ Gate = ExtResource("4_1a10c")
 parent = NodePath("../../../../..")
 
 [node name="Spacer2" type="Control" parent="TabContainer/Nodes/MiscGates/VBoxContainer"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+
+[node name="NodeAdderButton9" type="Button" parent="TabContainer/Nodes/MiscGates/VBoxContainer" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add Compiled Graph as Gate"
+script = ExtResource("6_she4b")
+parent = NodePath("../../../../..")
+
+[node name="Spacer3" type="Control" parent="TabContainer/Nodes/MiscGates/VBoxContainer"]
 custom_minimum_size = Vector2(5, 5)
 layout_mode = 2
 
@@ -257,7 +267,7 @@ layout_mode = 2
 metadata/_tab_index = 2
 
 [node name="Spacer" type="Control" parent="TabContainer/Graphs"]
-custom_minimum_size = Vector2(5, 570)
+custom_minimum_size = Vector2(5, 5)
 layout_mode = 2
 
 [node name="SaveButton" type="Button" parent="TabContainer/Graphs"]
@@ -276,10 +286,18 @@ layout_mode = 2
 
 [node name="RunButton" type="Button" parent="TabContainer/Graphs"]
 layout_mode = 2
-text = "Compile and Run"
+text = "Compile and view Results"
+
+[node name="Spacer4" type="Control" parent="TabContainer/Graphs"]
+layout_mode = 2
+
+[node name="CompileButton" type="Button" parent="TabContainer/Graphs"]
+layout_mode = 2
+text = "Compile as a Gate"
 
 [connection signal="value_changed" from="TabContainer/Settings/QBitCountSlider" to="." method="OnQBitCountSliderChanged"]
 [connection signal="value_changed" from="TabContainer/Settings/QBitOrderSlider" to="." method="OnQbitOrderSliderChanged"]
 [connection signal="pressed" from="TabContainer/Graphs/SaveButton" to="." method="SaveButtonPressed"]
 [connection signal="pressed" from="TabContainer/Graphs/LoadButton" to="." method="LoadButtonPressed"]
 [connection signal="pressed" from="TabContainer/Graphs/RunButton" to="." method="CompileButtonPressed"]
+[connection signal="pressed" from="TabContainer/Graphs/CompileButton" to="." method="CompileGateButtonPressed"]

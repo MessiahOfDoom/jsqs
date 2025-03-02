@@ -314,6 +314,24 @@ public struct LazyMatrix: IMatrix {
 		}
 		return res;
 	}
+
+	public byte[] ToByteArray() {
+		byte[] _out = new byte[8 + 16*getM()*getN()];
+		Buffer.BlockCopy(Helpers.BytesFromInt(getM()), 0, _out, 0, 4);
+		Buffer.BlockCopy(Helpers.BytesFromInt(getN()), 0, _out, 4, 4);
+		for(int y = 0; y < getM(); ++y) {
+			for(int x = 0; x < getN(); ++x) {
+				var bytes = Helpers.BytesFromDoubles(this[y,x]);
+				GD.Print(8 + x * 16 + y * 16 * getN());
+				Buffer.BlockCopy(bytes, 0, _out, 8 + x * 16 + y * 16 * getN(), bytes.Length);
+			}
+		}
+		return _out;
+	}
+
+	public static LazyMatrix FromByteArray(byte[] bytes) {
+		return new LazyMatrix(StructMatrix.FromByteArray(bytes), LazyMatrixOperation.Hold);
+	}
 }
 
 public enum LazyMatrixOperation {

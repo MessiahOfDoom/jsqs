@@ -127,10 +127,12 @@ public struct StructMatrix: IMatrix {
 	}
 
 	public static StructMatrix FromByteArray(byte[] bytes) {
+		if(bytes.Length < 8) throw new Exception("Too few bytes to parse as a matrix.");
 		var m = Helpers.IntFromBytes(Helpers.GetByteSubArray(bytes, 0, 4));
 		var n = Helpers.IntFromBytes(Helpers.GetByteSubArray(bytes, 4, 4));
 		var _out = new StructMatrix(m, n);
-		_out.data = Helpers.DoublesFromBytes(Helpers.GetByteSubArray(bytes, 8, bytes.Length - 8));
+		if(bytes.Length < 8 + (m*n*16)) throw new Exception("Too few bytes to parse as a matrix.");
+		_out.data = Helpers.DoublesFromBytes(Helpers.GetByteSubArray(bytes, 8, m*n*16));
 		return _out;
 	}
 

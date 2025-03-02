@@ -13,6 +13,9 @@ public partial class SideBar : Control
 
     [Signal]
     public delegate void AddNodeEventHandler(PackedScene scene);
+    
+    [Signal]
+    public delegate void AddPrecompiledNodeEventHandler();
 
     [Signal]
     public delegate void SaveToJsonEventHandler();
@@ -22,6 +25,9 @@ public partial class SideBar : Control
     
     [Signal]
     public delegate void CompileAndRunEventHandler();
+
+    [Signal]
+    public delegate void CompileToGateEventHandler();
 
     [Export]
     public LineEdit QBitCountLineEdit;
@@ -101,6 +107,10 @@ public partial class SideBar : Control
 
     public void CompileButtonPressed() {
         EmitSignal(SignalName.CompileAndRun);
+    }
+
+    public void CompileGateButtonPressed() {
+        EmitSignal(SignalName.CompileToGate);
     }
 
     public void UpdateSize() {

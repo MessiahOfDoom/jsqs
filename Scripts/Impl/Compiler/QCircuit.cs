@@ -113,6 +113,76 @@ public record QCircuit {
         return output;
     }
 
+    public IEnumerable<Vector> GetAllPossibleStatesFromPart(int partIdx) {
+        List<StringName> AllGates = new();
+        List<int> AllBits = new();
+        List<int> RunningBits = new();
+        for(var i = 0; i < parts.Count; ++i) {
+            var part = parts[i];
+            foreach(var gate in part.measurementGates) {
+                AllGates.Add(gate);
+                AllBits.Add(i >= partIdx ? 0 : bits[measurementGatesToBits[gate]]);
+                if(i >= partIdx) RunningBits.Add(0);
+            }
+        }
+
+        
+        var fromPart = -1;
+        for(int i = partIdx; i < parts.Count; ++i) {
+            if(parts[i].measurements.Count > 0) {
+                fromPart = i;
+                break;
+            }
+        }
+        if (fromPart == -1) {
+            GD.Print("AAA");
+            yield return inputs[inputs.Count - 1];
+        }
+        else {
+            do {
+                var currentRun = inputs[fromPart];
+                int[] bitsCopy = (int[])bits.Clone();
+                var totalChance = 1.0;
+
+                foreach(var pair in measurementGatesToBits) {
+                    bits[pair.Value] = AllBits[AllGates.IndexOf(pair.Key)];
+                }
+
+                for(var idx = fromPart; idx < parts.Count; ++idx) {
+                    currentRun = parts[idx].CalculateStateVector(currentRun, this, AllGates, AllBits, ref totalChance);
+                    if(totalChance == 0) break;
+                }
+                if(totalChance != 0) {
+                    GD.Print("BBB");
+                    var AllBitsAsString = "";
+                    foreach(var bit in bits){
+                        AllBitsAsString += bit;
+                    }
+                    GD.Print(AllBitsAsString);
+                    bits = bitsCopy;
+                    yield return currentRun;
+                }
+                for(int i = AllBits.Count - 1; i >= 0; --i) {
+                    if(AllBits[i] == 0) {
+                        AllBits[i] = 1;
+                        break;
+                    }else {
+                        AllBits[i] = 0;
+                    }
+                }
+                for(int i = RunningBits.Count - 1; i >= 0; --i) {
+                    if(RunningBits[i] == 0) {
+                        RunningBits[i] = 1;
+                        break;
+                    }else {
+                        RunningBits[i] = 0;
+                    }
+                }
+
+            } while(RunningBits.Contains(1));
+        }
+    }
+
     public System.Collections.Generic.Dictionary<int, int> MonteCarlo(int runs, int fromCheckpoint) {
         GD.Randomize();
         
@@ -157,6 +227,18 @@ public record QCircuit {
             res |= bits[b[i]] << i;
         }
         return res;
+    }
+
+    public LazyMatrix ToMatrix() {
+        if(parts.Count == 0) throw new Exception("This circuit doesn't contain any parts.");
+        foreach(var part in parts) {
+            if(part.measurements.Count > 0) throw new Exception("Can not convert a Circuit that contains a measurement to a byte Array.");
+        }
+        LazyMatrix _out = parts[0].compiledMatrix;
+        for(int i = 1; i < parts.Count; ++i) {
+            _out = parts[i].compiledMatrix * _out;
+        }
+        return _out;
     }
 }
 
