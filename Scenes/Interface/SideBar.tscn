@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://jkujowb0yw5p"]
+[gd_scene load_steps=20 format=3 uid="uid://jkujowb0yw5p"]
 
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/SideBar.cs" id="1_5ybyy"]
 [ext_resource type="Script" path="res://Scripts/Scenes/Interface/NodeAdderButton.cs" id="2_5pcrv"]
@@ -12,9 +12,13 @@
 [ext_resource type="PackedScene" uid="uid://cw84uakf6cnhn" path="res://Scenes/Gates/CNotGate.tscn" id="8_om8hw"]
 [ext_resource type="PackedScene" uid="uid://djnt51hut84i1" path="res://Scenes/Gates/SwapGate.tscn" id="9_23bmk"]
 [ext_resource type="PackedScene" uid="uid://b5h0nx5wsitw5" path="res://Scenes/Gates/ControlledPauliZGate.tscn" id="11_ju1cv"]
+[ext_resource type="PackedScene" uid="uid://bxjm7m4xu2nc3" path="res://Scenes/Gates/RYGate.tscn" id="11_k1yxy"]
 [ext_resource type="PackedScene" uid="uid://bscyvrxn4nkr0" path="res://Scenes/Interface/ExpandableVBoxContainer.tscn" id="12_xel6f"]
 [ext_resource type="PackedScene" uid="uid://xd7cdpyo5td3" path="res://Scenes/Gates/ClassicControlPXGate.tscn" id="13_6ryjr"]
 [ext_resource type="PackedScene" uid="uid://d1eg1wwb5oc6e" path="res://Scenes/Gates/ClassicControlPZGate.tscn" id="14_axa7m"]
+[ext_resource type="PackedScene" uid="uid://k7d45sccmalv" path="res://Scenes/Gates/ControlledPauliYGate.tscn" id="15_mlkhw"]
+[ext_resource type="PackedScene" uid="uid://0x5v7e3vaf6n" path="res://Scenes/Gates/ToffoliGate.tscn" id="16_ojfql"]
+[ext_resource type="PackedScene" uid="uid://dppupngh4dygl" path="res://Scenes/Gates/ClassicControlPYGate.tscn" id="17_v4mqo"]
 
 [node name="SideBar" type="ColorRect" node_paths=PackedStringArray("QBitCountLineEdit", "QBitCountSlider", "QBitOrderLineEdit", "QBitOrderSlider")]
 custom_minimum_size = Vector2(255, 720)
@@ -100,6 +104,7 @@ container = NodePath("VBoxContainer")
 title = "Miscellanoues Gates"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Nodes/MiscGates"]
+visible = false
 layout_mode = 2
 
 [node name="NodeAdderButton2" type="Button" parent="TabContainer/Nodes/MiscGates/VBoxContainer" node_paths=PackedStringArray("parent")]
@@ -187,6 +192,17 @@ script = ExtResource("2_5pcrv")
 Gate = ExtResource("7_htb3h")
 parent = NodePath("../../../../..")
 
+[node name="Spacer6" type="Control" parent="TabContainer/Nodes/1BitGates/VBoxContainer"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+
+[node name="NodeAdderButton6" type="Button" parent="TabContainer/Nodes/1BitGates/VBoxContainer" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add RY Gate"
+script = ExtResource("2_5pcrv")
+Gate = ExtResource("11_k1yxy")
+parent = NodePath("../../../../..")
+
 [node name="Spacer3" type="Control" parent="TabContainer/Nodes"]
 custom_minimum_size = Vector2(5, 5)
 layout_mode = 2
@@ -218,6 +234,17 @@ script = ExtResource("2_5pcrv")
 Gate = ExtResource("9_23bmk")
 parent = NodePath("../../../../..")
 
+[node name="Spacer10" type="Control" parent="TabContainer/Nodes/NBitGates/VBoxContainer"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+
+[node name="NodeAdderButton10" type="Button" parent="TabContainer/Nodes/NBitGates/VBoxContainer" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add Controlled Pauli Y Gate"
+script = ExtResource("2_5pcrv")
+Gate = ExtResource("15_mlkhw")
+parent = NodePath("../../../../..")
+
 [node name="Spacer9" type="Control" parent="TabContainer/Nodes/NBitGates/VBoxContainer"]
 custom_minimum_size = Vector2(5, 5)
 layout_mode = 2
@@ -227,6 +254,17 @@ layout_mode = 2
 text = "Add Controlled Pauli Z Gate"
 script = ExtResource("2_5pcrv")
 Gate = ExtResource("11_ju1cv")
+parent = NodePath("../../../../..")
+
+[node name="Spacer11" type="Control" parent="TabContainer/Nodes/NBitGates/VBoxContainer"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+
+[node name="NodeAdderButton11" type="Button" parent="TabContainer/Nodes/NBitGates/VBoxContainer" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add Toffoli Gate"
+script = ExtResource("2_5pcrv")
+Gate = ExtResource("16_ojfql")
 parent = NodePath("../../../../..")
 
 [node name="Spacer4" type="Control" parent="TabContainer/Nodes"]
@@ -244,7 +282,7 @@ layout_mode = 2
 
 [node name="NodeAdderButton6" type="Button" parent="TabContainer/Nodes/ClassicControlGates/VBoxContainer" node_paths=PackedStringArray("parent")]
 layout_mode = 2
-text = "Add Classically Controlled Pauli X Gate"
+text = "Add classic ctrl. Pauli X Gate"
 script = ExtResource("2_5pcrv")
 Gate = ExtResource("13_6ryjr")
 parent = NodePath("../../../../..")
@@ -255,49 +293,60 @@ layout_mode = 2
 
 [node name="NodeAdderButton7" type="Button" parent="TabContainer/Nodes/ClassicControlGates/VBoxContainer" node_paths=PackedStringArray("parent")]
 layout_mode = 2
-text = "Add Classically Controlled Pauli Z Gate"
+text = "Add classic ctrl. Pauli Y Gate"
+script = ExtResource("2_5pcrv")
+Gate = ExtResource("17_v4mqo")
+parent = NodePath("../../../../..")
+
+[node name="Spacer2" type="Control" parent="TabContainer/Nodes/ClassicControlGates/VBoxContainer"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+
+[node name="NodeAdderButton8" type="Button" parent="TabContainer/Nodes/ClassicControlGates/VBoxContainer" node_paths=PackedStringArray("parent")]
+layout_mode = 2
+text = "Add classic ctrl. Pauli Z Gate"
 script = ExtResource("2_5pcrv")
 Gate = ExtResource("14_axa7m")
 parent = NodePath("../../../../..")
 
-[node name="Graphs" type="VBoxContainer" parent="TabContainer"]
+[node name="Graph" type="VBoxContainer" parent="TabContainer"]
 visible = false
 custom_minimum_size = Vector2(255, 689)
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="Spacer" type="Control" parent="TabContainer/Graphs"]
+[node name="Spacer" type="Control" parent="TabContainer/Graph"]
 custom_minimum_size = Vector2(5, 5)
 layout_mode = 2
 
-[node name="SaveButton" type="Button" parent="TabContainer/Graphs"]
+[node name="SaveButton" type="Button" parent="TabContainer/Graph"]
 layout_mode = 2
 text = "Save to JSON file"
 
-[node name="Spacer2" type="Control" parent="TabContainer/Graphs"]
+[node name="Spacer2" type="Control" parent="TabContainer/Graph"]
 layout_mode = 2
 
-[node name="LoadButton" type="Button" parent="TabContainer/Graphs"]
+[node name="LoadButton" type="Button" parent="TabContainer/Graph"]
 layout_mode = 2
 text = "Load from JSON file"
 
-[node name="Spacer3" type="Control" parent="TabContainer/Graphs"]
+[node name="Spacer3" type="Control" parent="TabContainer/Graph"]
 layout_mode = 2
 
-[node name="RunButton" type="Button" parent="TabContainer/Graphs"]
+[node name="RunButton" type="Button" parent="TabContainer/Graph"]
 layout_mode = 2
 text = "Compile and view Results"
 
-[node name="Spacer4" type="Control" parent="TabContainer/Graphs"]
+[node name="Spacer4" type="Control" parent="TabContainer/Graph"]
 layout_mode = 2
 
-[node name="CompileButton" type="Button" parent="TabContainer/Graphs"]
+[node name="CompileButton" type="Button" parent="TabContainer/Graph"]
 layout_mode = 2
 text = "Compile as a Gate"
 
 [connection signal="value_changed" from="TabContainer/Settings/QBitCountSlider" to="." method="OnQBitCountSliderChanged"]
 [connection signal="value_changed" from="TabContainer/Settings/QBitOrderSlider" to="." method="OnQbitOrderSliderChanged"]
-[connection signal="pressed" from="TabContainer/Graphs/SaveButton" to="." method="SaveButtonPressed"]
-[connection signal="pressed" from="TabContainer/Graphs/LoadButton" to="." method="LoadButtonPressed"]
-[connection signal="pressed" from="TabContainer/Graphs/RunButton" to="." method="CompileButtonPressed"]
-[connection signal="pressed" from="TabContainer/Graphs/CompileButton" to="." method="CompileGateButtonPressed"]
+[connection signal="pressed" from="TabContainer/Graph/SaveButton" to="." method="SaveButtonPressed"]
+[connection signal="pressed" from="TabContainer/Graph/LoadButton" to="." method="LoadButtonPressed"]
+[connection signal="pressed" from="TabContainer/Graph/RunButton" to="." method="CompileButtonPressed"]
+[connection signal="pressed" from="TabContainer/Graph/CompileButton" to="." method="CompileGateButtonPressed"]

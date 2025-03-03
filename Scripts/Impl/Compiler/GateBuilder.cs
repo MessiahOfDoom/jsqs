@@ -80,6 +80,25 @@ public partial class GateBuilder
 		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
 	}
 
+	public static LazyMatrix Toffoli() {
+		var _out = new SparseMatrix(8,8);
+		for(int i = 0; i < 6; ++i) {
+			_out[i,i] = 1;
+		}
+		_out[6,7] = 1;
+		_out[7,6] = 1;
+		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
+	}
+
+	public static LazyMatrix RY(double alpha) {
+		var _out = new SparseMatrix(2,2);
+		_out[0,0] = Math.Cos(alpha);
+		_out[1,0] = Math.Sin(alpha);
+		_out[0,1] = - Math.Sin(alpha);
+		_out[1,1] = Math.Cos(alpha);
+		return new LazyMatrix(_out, LazyMatrixOperation.Hold);
+	}
+
 	public static LazyMatrix Controlled(IMatrix matrix) {
 		if(matrix == null) throw new ArgumentNullException("Tried constructing a controlled Matrix without providing the matrix.");
 		if(matrix.getM() == 2 && matrix.getN() == 2) {
