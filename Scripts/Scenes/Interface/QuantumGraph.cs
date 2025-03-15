@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public partial class QuantumGraph : GraphEdit
 {
@@ -28,7 +29,7 @@ public partial class QuantumGraph : GraphEdit
 	private Color QBitColor = new(0xBE6EF5FF);
 	private Color BitColor = new(0xA5F56EFF);
 
-	private bool QBitOrderAscending = false;
+	public bool QBitOrderAscending = false;
 
 	private Compiler compiler;
 	public override void _Ready()
@@ -312,7 +313,9 @@ public partial class QuantumGraph : GraphEdit
 
 	public void CompileToGate(string filename) {
 		using var Savefile = FileAccess.Open(filename, FileAccess.ModeFlags.Write);
-		Savefile.StoreString(AsBase64String());
+		Savefile.StoreLine(AsBase64String());
+		Savefile.SeekEnd();
+		Savefile.StoreLine(Convert.ToBase64String(Encoding.UTF8.GetBytes(AsJsonString())));
 	}
 
 	public string AsBase64String() {

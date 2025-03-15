@@ -117,7 +117,7 @@ public partial class SideBar : Control
         float height = CustomMinimumSize.Y;
         (FindChild("Settings", recursive:true, owned: false) as VBoxContainer).CustomMinimumSize = new(255, Math.Max(689, height - 31));
         (FindChild("Nodes", recursive:true, owned: false) as VBoxContainer).CustomMinimumSize = new(255, Math.Max(689, height - 31));
-        (FindChild("Graphs", recursive:true, owned: false) as VBoxContainer).CustomMinimumSize = new(255, Math.Max(689, height - 31));
+        (FindChild("Graph", recursive:true, owned: false) as VBoxContainer).CustomMinimumSize = new(255, Math.Max(689, height - 31));
     }
 
 }

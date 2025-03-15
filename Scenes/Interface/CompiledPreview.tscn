@@ -1,0 +1,54 @@
+[gd_scene load_steps=5 format=3 uid="uid://cj0eqg6m5pr3s"]
+
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/CompiledPreview.cs" id="1_07a16"]
+[ext_resource type="Script" path="res://Scripts/Scenes/Interface/QuantumGraphPreview.cs" id="1_ojnaw"]
+[ext_resource type="PackedScene" uid="uid://bjf7efc0k0dwc" path="res://Scenes/Gates/InputGate.tscn" id="2_x56u7"]
+[ext_resource type="PackedScene" uid="uid://dgy0am3ijg5dd" path="res://Scenes/Gates/OutputGate.tscn" id="3_rsv7p"]
+
+[node name="CompiledPreview" type="Window"]
+size = Vector2i(1280, 720)
+script = ExtResource("1_07a16")
+
+[node name="QuantumGraphPreviewCompiled" type="GraphEdit" parent="." node_paths=PackedStringArray("inputGate", "outputGate")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_ojnaw")
+inputGate = NodePath("InputGate")
+outputGate = NodePath("OutputGate")
+
+[node name="InputGate" parent="QuantumGraphPreviewCompiled" instance=ExtResource("2_x56u7")]
+layout_mode = 0
+offset_left = 264.0
+offset_top = 259.0
+offset_right = 535.0
+offset_bottom = 384.0
+mouse_filter = 1
+position_offset = Vector2(264, 259)
+slot/0/left_enabled = false
+slot/0/left_type = 0
+slot/0/left_color = Color(0, 0, 0, 0)
+slot/0/left_icon = null
+slot/0/right_enabled = true
+slot/0/right_type = 0
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+QBits = 1
+
+[node name="OutputGate" parent="QuantumGraphPreviewCompiled" instance=ExtResource("3_rsv7p")]
+layout_mode = 2
+offset_left = 676.0
+offset_top = 257.0
+offset_right = 757.0
+offset_bottom = 347.0
+mouse_filter = 1
+position_offset = Vector2(676, 257)
+title = "Output    "
+
+[connection signal="close_requested" from="." to="." method="hide"]
+[connection signal="SetQbitsFromInputGate" from="QuantumGraphPreviewCompiled/InputGate" to="QuantumGraphPreviewCompiled" method="OnSetSlotCount"]

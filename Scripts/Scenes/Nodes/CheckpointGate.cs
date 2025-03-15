@@ -68,8 +68,6 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
 	}
 
 	private static bool isCheckpointNameFree(string name) {
-		GD.Print(!checkpoints.ContainsKey(name) + "   " + name);
-		GD.Print(checkpoints);
 		return !checkpoints.ContainsKey(name);
 	}
 
@@ -110,7 +108,6 @@ public partial class CheckpointGate : GraphNode, ISaveableGate, IResizeableGate,
         if(dict.ContainsKey("CheckpointName")) {
 			SetNextFreeName(dict["CheckpointName"].AsStringName());
 		}
-		GD.Print(checkpoints);
     }
 
     public void SetSlotCount(int slotCount)

@@ -22,7 +22,7 @@
 
 [node name="SideBar" type="ColorRect" node_paths=PackedStringArray("QBitCountLineEdit", "QBitCountSlider", "QBitOrderLineEdit", "QBitOrderSlider")]
 custom_minimum_size = Vector2(255, 720)
-offset_right = 120.0
+offset_right = 255.0
 offset_bottom = 720.0
 color = Color(0.408329, 0.408329, 0.408329, 1)
 script = ExtResource("1_5ybyy")

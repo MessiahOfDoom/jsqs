@@ -49,6 +49,26 @@ public partial class ResultWindowContents : TabContainer
 		if(initialized) SelectStateCheckpoint();
 	}
 
+	public void rerunAnalysisWindowNewInputs() {
+		var otherGraph = GetTree().Root.FindChild("GraphEdit", recursive:true, owned:false) as QuantumGraph;
+		if(otherGraph != null) {
+			try {
+				var graph = GetTree().Root.FindChild("QuantumGraphPreview", recursive:true, owned:false) as QuantumGraphPreview;
+				if(!graph.inputGate.AllQBitsValid()) 
+					throw new Exception("Not all QBits are valid, cannot run.");
+				var input = graph.inputGate.GetInput(otherGraph.QBitOrderAscending);
+				GD.Print("Rerunning the entire circuit: ");
+				var _out = lastCompiledCircuit.RunWithInput(input);
+				GD.Print(_out);
+				if(initialized) SelectStateCheckpoint();
+			} catch (Exception e){
+				otherGraph.EmitSignal(QuantumGraph.SignalName.CircuitCompileError, e.Message);
+				GD.PrintErr(e);
+			}
+		}
+		
+	}
+
 	public void rerunAnalysisWindowFromCheckpoint() {
 		var dropdown = GetTree().Root.FindChild("CheckpointDropdown", recursive:true, owned: false) as OptionButton;
 		var checkpointIdx = 0;
@@ -99,7 +119,6 @@ public partial class ResultWindowContents : TabContainer
 	}
 
 	public void SelectStateMode(int idx) {
-		GD.Print(idx);
 		if(idx == 0) {
 			showStateAtCheckpoint();
 		}

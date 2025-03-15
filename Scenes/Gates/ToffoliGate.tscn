@@ -5,7 +5,7 @@
 
 [node name="ToffoliGate" type="GraphNode"]
 offset_right = 115.0
-offset_bottom = 164.0
+offset_bottom = 166.0
 title = "Toffoli Gate    "
 slot/0/left_enabled = true
 slot/0/left_type = 0

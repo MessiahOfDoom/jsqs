@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Linq;
+using System.Text;
 
 [GlobalClass, Tool]
 public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGate, IColorableGate, IMultiInputGate
@@ -18,6 +19,7 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
 	}
 
 	private string AsBase64String = "";
+	private string CircuitPreviewBase64 = "";
 	private string gateName = "";
 
 	// Called when the node enters the scene tree for the first time.
@@ -48,6 +50,7 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
 			{"PosY", PositionOffset.Y},
 			{"Name", Name},
 			{"Base64", AsBase64String},
+			{"PreviewBase64", CircuitPreviewBase64},
 			{"GateName", gateName}
 		};
     }
@@ -62,6 +65,7 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
 		QBits = (int)Math.Ceiling(Math.Log2(N));
 		if((1 << QBits) != N) throw new Exception("Matrix dimensions aren't a multiple of 2, couldn't build a Gate out of it.");
 		gateName = dict["GateName"].AsString();
+		CircuitPreviewBase64 = dict["PreviewBase64"].AsString();
     }
 
     public LazyMatrix compile(int QBitCount, Array<int> ForQBits)
@@ -73,22 +77,32 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
     }
 
 	public void InitializeFromFile(string filename) {
-		GD.Print(filename.Replace("\\", "/").Split("/").Last().Replace(".jqcg", ""));
 		gateName = filename.Replace("\\", "/").Split("/").Last().Replace(".jqcg", "");
 		Title = $"Precompiled Gate '{gateName}'    ";
 		using var file = FileAccess.Open(filename, FileAccess.ModeFlags.Read);
-		AsBase64String = file.GetAsText();
+		AsBase64String = file.GetLine();
 		var mat = LazyMatrix.FromByteArray(Convert.FromBase64String(AsBase64String));
 		var N = mat.getN();
 		var M = mat.getM();
 		if(M != N) throw new Exception("Matrix isn't square, couldn't build a Gate out of it.");
 		QBits = (int)Math.Ceiling(Math.Log2(N));
 		if((1 << QBits) != N) throw new Exception("Matrix dimensions aren't a multiple of 2, couldn't build a Gate out of it.");
-		//TODO maybe check for unitary matrix
+		CircuitPreviewBase64 = file.GetLine();
 	}
 
     public int GetSlotCount()
     {
         return QBits;
     }
+
+	public void OnGuiInput(InputEvent ev) {
+		if(ev is InputEventMouseButton mb) {
+			if(mb.ButtonIndex == MouseButton.Left && mb.DoubleClick) {
+				var preview = GetTree().Root.FindChild("CompiledPreview", recursive:true, owned:false) as CompiledPreview;
+				if(preview != null) {
+					preview.ShowCircuit(CircuitPreviewBase64);
+				}
+			}
+		}
+	} 
 }

@@ -322,7 +322,6 @@ public struct LazyMatrix: IMatrix {
 		for(int y = 0; y < getM(); ++y) {
 			for(int x = 0; x < getN(); ++x) {
 				var bytes = Helpers.BytesFromDoubles(this[y,x]);
-				GD.Print(8 + x * 16 + y * 16 * getN());
 				Buffer.BlockCopy(bytes, 0, _out, 8 + x * 16 + y * 16 * getN(), bytes.Length);
 			}
 		}

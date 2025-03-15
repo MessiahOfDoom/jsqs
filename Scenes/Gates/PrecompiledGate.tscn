@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://Scripts/Scenes/Nodes/PrecompiledGate.cs" id="1_kgisc"]
 
 [node name="PrecompiledGate" type="GraphNode"]
-offset_right = 163.0
+offset_right = 175.0
 offset_bottom = 90.0
-title = "Precompiled Gate    "
+title = "Precompiled Gate ''    "
 slot/0/left_enabled = true
 slot/0/left_type = 0
 slot/0/left_color = Color(1, 1, 1, 1)
@@ -16,3 +16,5 @@ slot/0/right_color = Color(1, 1, 1, 1)
 slot/0/right_icon = null
 slot/0/draw_stylebox = true
 script = ExtResource("1_kgisc")
+
+[connection signal="gui_input" from="." to="." method="OnGuiInput"]

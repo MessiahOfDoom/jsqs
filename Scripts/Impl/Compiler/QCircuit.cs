@@ -33,6 +33,7 @@ public record QCircuit {
 
     public Vector RunWithInput(Vector input) {
         var output = input;
+        inputs.Clear();
         for(int i = 0; i < parts.Count; ++i) {
             inputs.Add(output);
             if(parts[i].measurements.Count > 0) measurementCheckpoints.Add(i);
@@ -135,7 +136,6 @@ public record QCircuit {
             }
         }
         if (fromPart == -1) {
-            GD.Print("AAA");
             yield return inputs[inputs.Count - 1];
         }
         else {
@@ -153,12 +153,10 @@ public record QCircuit {
                     if(totalChance == 0) break;
                 }
                 if(totalChance != 0) {
-                    GD.Print("BBB");
                     var AllBitsAsString = "";
                     foreach(var bit in bits){
                         AllBitsAsString += bit;
                     }
-                    GD.Print(AllBitsAsString);
                     bits = bitsCopy;
                     yield return currentRun;
                 }

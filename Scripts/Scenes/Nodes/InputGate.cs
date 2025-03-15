@@ -132,4 +132,12 @@ public partial class InputGate : GraphNode, ISaveableGate, IResizeableGate, ICol
 		}
 		return _out;
 	}
+
+	public void SetEnabled(bool enabled) {
+		foreach(var c in GetChildren()) {
+			if(c is ComplexInputSlot slot) {
+				slot.SetEnabled(enabled);
+			}
+		}
+	}
 }

@@ -23,6 +23,5 @@ public partial class WindowControls : HBoxContainer
 		var windowSize = DisplayServer.WindowGetSize();
 		sideBar.CustomMinimumSize = new(255, Math.Max(720, windowSize.Y));
 		sideBar.UpdateSize();
-		graph.CustomMinimumSize = new(Math.Max(1024, windowSize.X - 255), Math.Max(720, windowSize.Y));
 	}
 }

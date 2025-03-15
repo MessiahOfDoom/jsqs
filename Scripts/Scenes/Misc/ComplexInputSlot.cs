@@ -1,6 +1,7 @@
 using Godot;
 using System;
 
+[GlobalClass]
 public partial class ComplexInputSlot : Control
 {
 
@@ -49,5 +50,12 @@ public partial class ComplexInputSlot : Control
 
 	public bool QBitValid() {
 		return (Math.Abs(1 - GetValue().Abs2()) < 5e-5);
+	}
+
+	public void SetEnabled(bool enabled) {
+		RealEditZero.Editable = enabled;
+		RealEditOne.Editable = enabled;
+		ComplexEditZero.Editable = enabled;
+		ComplexEditOne.Editable = enabled;
 	}
 }
