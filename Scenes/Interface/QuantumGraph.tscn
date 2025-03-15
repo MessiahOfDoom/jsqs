@@ -75,10 +75,12 @@ initial_position = 2
 script = ExtResource("7_d2nl5")
 
 [node name="ResultWindow" parent="." instance=ExtResource("9_qutk6")]
+title = "JSQS - Analysis"
 initial_position = 2
 visible = false
 
 [node name="CompiledPreview" parent="." instance=ExtResource("10_rpf5e")]
+title = "JSQS - Node Preview"
 initial_position = 2
 visible = false
 

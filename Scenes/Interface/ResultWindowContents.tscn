@@ -178,16 +178,16 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-scroll_offset = Vector2(-216, -167)
 script = ExtResource("4_njamb")
 inputGate = NodePath("InputGate")
 outputGate = NodePath("OutputGate")
 
 [node name="InputGate" parent="Analysis/VBoxContainer/QuantumGraphPreview" instance=ExtResource("5_ym0gs")]
 layout_mode = 0
-offset_left = -87.0
-offset_right = 184.0
-offset_bottom = 124.0
+offset_left = -303.0
+offset_top = -167.0
+offset_right = -198.0
+offset_bottom = -113.0
 mouse_filter = 1
 position_offset = Vector2(-303, -167)
 slot/0/left_enabled = false
@@ -203,10 +203,10 @@ QBits = 1
 
 [node name="OutputGate" parent="Analysis/VBoxContainer/QuantumGraphPreview" instance=ExtResource("6_uou8a")]
 layout_mode = 2
-offset_left = 423.0
-offset_top = 13.0
-offset_right = 502.0
-offset_bottom = 102.0
+offset_left = 207.0
+offset_top = -154.0
+offset_right = 286.0
+offset_bottom = -100.0
 mouse_filter = 1
 position_offset = Vector2(207, -154)
 title = "Output    "

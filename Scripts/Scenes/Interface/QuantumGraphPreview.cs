@@ -135,4 +135,13 @@ public partial class QuantumGraphPreview : GraphEdit
 		return nodes.FindAll(x => x is CheckpointGate);
 	}
 
+	public Vector GetInputOrThrow() {
+		var otherGraph = GetTree().Root.FindChild("GraphEdit", recursive:true, owned:false) as QuantumGraph;
+		if(!inputGate.AllQBitsValid() || otherGraph == null) {
+			if(otherGraph != null) otherGraph.EmitSignal(QuantumGraph.SignalName.CircuitCompileError, "Not all QBits are valid, cannot run.");
+			throw new Exception();
+		}
+		return inputGate.GetInput(otherGraph.QBitOrderAscending);
+	}
+
 }

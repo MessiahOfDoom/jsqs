@@ -66,6 +66,7 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
 		if((1 << QBits) != N) throw new Exception("Matrix dimensions aren't a multiple of 2, couldn't build a Gate out of it.");
 		gateName = dict["GateName"].AsString();
 		CircuitPreviewBase64 = dict["PreviewBase64"].AsString();
+		Title = $"Precompiled Gate '{gateName}'    ";
     }
 
     public LazyMatrix compile(int QBitCount, Array<int> ForQBits)
@@ -98,6 +99,7 @@ public partial class PrecompiledGate : GraphNode, ISaveableGate, ICompileableGat
 	public void OnGuiInput(InputEvent ev) {
 		if(ev is InputEventMouseButton mb) {
 			if(mb.ButtonIndex == MouseButton.Left && mb.DoubleClick) {
+				mb.Canceled = true;
 				var preview = GetTree().Root.FindChild("CompiledPreview", recursive:true, owned:false) as CompiledPreview;
 				if(preview != null) {
 					preview.ShowCircuit(CircuitPreviewBase64);

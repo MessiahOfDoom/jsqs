@@ -12,11 +12,11 @@ public partial class ResultWindowContents : TabContainer
 	public void setCircuit(QCircuit circuit, int qbits, string GraphJson) {
 		lastCompiledCircuit = circuit;
 		lastQBitCount = qbits;
-		rerunMonteCarlo();
 		setGraphPreview(GraphJson);
 		setupStatePreview();
 		initialized = true;
 		SelectStateCheckpoint();
+		rerunMonteCarlo();
 	}
 
 	public void rerunMonteCarlo() {
@@ -39,6 +39,7 @@ public partial class ResultWindowContents : TabContainer
 			dropdown.AddItem(checkpoint.CheckpointName);
 			dropdown.SetItemMetadata(dropdown.ItemCount - 1, checkpoint);
 		}
+		lastCompiledCircuit.inputGetter = graph.GetInputOrThrow;
 		rerunAnalysisWindow();
 	}
 
@@ -46,7 +47,10 @@ public partial class ResultWindowContents : TabContainer
 		GD.Print("Rerunning the entire circuit: ");
 		var _out = lastCompiledCircuit.RerunFromPart(0);
 		GD.Print(_out);
-		if(initialized) SelectStateCheckpoint();
+		if(initialized) {
+			SelectStateCheckpoint();
+			rerunMonteCarlo();
+		}
 	}
 
 	public void rerunAnalysisWindowNewInputs() {
@@ -60,7 +64,10 @@ public partial class ResultWindowContents : TabContainer
 				GD.Print("Rerunning the entire circuit: ");
 				var _out = lastCompiledCircuit.RunWithInput(input);
 				GD.Print(_out);
-				if(initialized) SelectStateCheckpoint();
+				if(initialized) {
+					SelectStateCheckpoint();
+					rerunMonteCarlo();
+				}
 			} catch (Exception e){
 				otherGraph.EmitSignal(QuantumGraph.SignalName.CircuitCompileError, e.Message);
 				GD.PrintErr(e);

@@ -26,3 +26,7 @@ window/subwindows/embed_subwindows=false
 [dotnet]
 
 project/assembly_name="JSQS"
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true
